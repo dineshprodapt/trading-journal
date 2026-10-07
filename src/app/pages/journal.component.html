@@ -1,0 +1,541 @@
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="#"
+      ><span class="brand-mark">TJ</span><span>Trading<br /><strong>Journal</strong></span></a
+    >
+    <p class="eyebrow nav-caption">WORKSPACE</p>
+    <nav aria-label="Main navigation">
+      <a href="#overview" class="active">◫ <span>Overview</span></a
+      ><a href="#daily">▤ <span>Daily journal</span></a
+      ><a href="#monthly">▥ <span>Monthly summary</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="status-dot"></span>{{ auth.demo ? 'Local demo' : 'Private journal' }}
+      <p>Small reflections.<br />Better decisions.</p>
+    </div>
+  </aside>
+  <div class="workspace">
+    <header class="topbar">
+      <span>WORKSPACE <span class="text-secondary mx-2">/</span> OVERVIEW</span>
+      <div class="d-flex align-items-center gap-3">
+        <span class="user-label">{{ auth.demo ? 'Demo workspace' : auth.user()?.email }}</span>
+        @if (!auth.demo) {
+          <button class="btn btn-sm btn-outline-secondary" (click)="logout()">Sign out</button>
+        }
+        <span class="avatar">TJ</span>
+      </div>
+    </header>
+    <main id="overview" class="main-content">
+      @if (auth.demo) {
+        <div class="demo-banner">
+          <div>
+            <strong>LOCAL DEMO</strong> · Data stays in this browser. Use sample data only; connect
+            Firebase for private cloud storage.
+          </div>
+          <div class="d-flex gap-2">
+            @if (!all().length) {
+              <button class="btn btn-sm btn-outline-secondary" (click)="samples()">
+                Load sample data
+              </button>
+            }
+            <button class="btn btn-sm btn-link" (click)="clearDemo()">Clear demo data</button>
+          </div>
+        </div>
+      }
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">REFLECT. REFINE. REPEAT.</p>
+          <h1>Dinesh Trading Journal</h1>
+          <p class="text-secondary mb-0">A daily record. A clearer picture of your performance.</p>
+        </div>
+        <button class="btn btn-primary" (click)="add()" [disabled]="journal.loading()">
+          ＋ New daily entry
+        </button>
+      </div>
+      @if (notice()) {
+        <div class="alert alert-success" role="status">{{ notice() }}</div>
+      }
+      @if (error()) {
+        <div class="alert alert-danger" role="alert">{{ error() }}</div>
+      }
+      @if (journal.error()) {
+        <div class="alert alert-danger" role="alert">{{ journal.error() }}</div>
+      }
+      @if (journal.loading()) {
+        <div class="alert alert-info" role="status">Loading your journal…</div>
+      }
+      @if (!auth.demo && journal.cached()) {
+        <div class="alert alert-warning" role="status">
+          Waiting for server confirmation. Displayed data may be cached; saving requires a
+          connection.
+        </div>
+      }
+      <div class="section-toolbar">
+        <div>
+          <span class="section-title">Performance overview</span
+          ><span class="small text-secondary ms-3">{{ metrics().days }} recorded days</span>
+        </div>
+        <label class="period-picker"
+          >Period
+          <select
+            class="form-select form-select-sm"
+            aria-label="Period"
+            [ngModel]="month()"
+            (ngModelChange)="changeMonth($event)"
+          >
+            <option value="">All months</option>
+            @for (m of months(); track m) {
+              <option [value]="m">{{ monthLabel(m) }}</option>
+            }
+          </select></label
+        >
+      </div>
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+          <section class="metric-card featured">
+            <p>NET PROFIT / LOSS</p>
+            <h2 [class.negative]="metrics().pnl < 0">{{ money(metrics().pnl) }}</h2>
+            <small>After trading charges</small>
+          </section>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+          <section class="metric-card">
+            <p>TOTAL TRADES</p>
+            <h2>{{ metrics().trades | number }}</h2>
+            <small>{{
+              metrics().missingCounts
+                ? metrics().missingCounts + ' days missing trade counts'
+                : 'From your recorded trade counts'
+            }}</small>
+          </section>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+          <section class="metric-card">
+            <p>DAY WIN RATE</p>
+            <h2>
+              {{ metrics().winRate === null ? '—' : (metrics().winRate | number: '1.1-1') + '%' }}
+            </h2>
+            <small
+              >{{ metrics().wins }} profit · {{ metrics().losses }} loss ·
+              {{ metrics().flat }} flat</small
+            >
+          </section>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+          <section class="metric-card">
+            <p>WIN / LOSS DAY RATIO</p>
+            <h2 class="ratio-value">{{ metrics().ratio }}</h2>
+            <small>Flat days excluded</small>
+          </section>
+        </div>
+      </div>
+      <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+          <section class="panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Monthly results</h2>
+                <p>Net P&L for each month · ₹</p>
+              </div>
+              <span class="chart-key">● Profit <span class="negative ms-2">● Loss</span></span>
+            </div>
+            <app-trend-chart
+              kind="bar"
+              title="Monthly net P&L"
+              [labels]="chartMonths()"
+              [values]="chartMonthlyValues()"
+            />
+          </section>
+        </div>
+        <div class="col-lg-6">
+          <section class="panel">
+            <div class="panel-heading">
+              <div>
+                <h2>The bigger picture</h2>
+                <p>All-time cumulative P&L at each selected date · ₹</p>
+              </div>
+              <span class="tag">RUNNING TOTAL</span>
+            </div>
+            <app-trend-chart
+              title="Cumulative P&L"
+              [labels]="chartDates()"
+              [values]="chartCumulative()"
+            />
+          </section>
+        </div>
+      </div>
+      @if (!journal.loading() && !all().length) {
+        <div class="empty-state mb-4">
+          <h2>Your first entry starts the story.</h2>
+          <p>Add today's figures to see your performance take shape.</p>
+          <button class="btn btn-primary" (click)="add()">Create first entry</button>
+        </div>
+      }
+      @if (showForm()) {
+        <section class="panel entry-panel mb-4" aria-labelledby="entry-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">DAILY REFLECTION</p>
+              <h2 id="entry-title">{{ editing() ? 'Edit daily entry' : 'New daily entry' }}</h2>
+            </div>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="showForm.set(false)"
+              [disabled]="busy()"
+            >
+              Cancel
+            </button>
+          </div>
+          <form [formGroup]="form" (ngSubmit)="save()">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label for="entry-date" class="form-label">Date *</label
+                ><input
+                  id="entry-date"
+                  class="form-control"
+                  type="date"
+                  formControlName="date"
+                  min="1900-01-01"
+                  max="2099-12-31"
+                  [readOnly]="!!editing()"
+                /><small class="text-secondary"
+                  >One entry per date. Date stays fixed when editing.</small
+                >
+              </div>
+              <div class="col-md-4">
+                <label for="capital" class="form-label">Starting Capital (₹)</label
+                ><input
+                  id="capital"
+                  class="form-control"
+                  type="number"
+                  min="0"
+                  max="10000000000"
+                  step="0.01"
+                  formControlName="startingCapital"
+                  placeholder="Optional"
+                /><small class="text-secondary"
+                  >Enter manually, including deposits / withdrawals.</small
+                >
+              </div>
+              <div class="col-md-4">
+                <label for="pnl" class="form-label">Profit / Loss (₹) *</label
+                ><input
+                  id="pnl"
+                  class="form-control"
+                  type="number"
+                  step="0.01"
+                  formControlName="pnl"
+                  placeholder="e.g. 5000 or -2500"
+                /><small class="text-secondary"
+                  >Net after charges. Enter 0 for a recorded flat day.</small
+                >
+              </div>
+              <div class="col-md-8">
+                <label for="notes" class="form-label">Trades / Notes</label
+                ><textarea
+                  id="notes"
+                  class="form-control"
+                  rows="3"
+                  formControlName="notes"
+                  maxlength="2000"
+                  placeholder="Setup, strategy, mistakes, market conditions…"
+                ></textarea>
+              </div>
+              <div class="col-md-4">
+                <label for="trade-count" class="form-label"
+                  >Trade count <span class="text-secondary">(optional)</span></label
+                ><input
+                  id="trade-count"
+                  class="form-control"
+                  type="number"
+                  step="1"
+                  min="0"
+                  max="100000"
+                  formControlName="tradeCount"
+                /><small class="text-secondary"
+                  >Added for total trades. Notes are never treated as a count.</small
+                >
+              </div>
+            </div>
+            <p class="small text-secondary mt-3">
+              Ending capital, daily return, P&L status, day, month, and cumulative P&L are
+              calculated automatically.
+            </p>
+            @if (form.invalid && form.touched) {
+              <p class="text-danger" role="alert">
+                Enter a date and P&L. Use non-negative capital, a whole trade count (0–100,000), and
+                notes up to 2,000 characters.
+              </p>
+            }
+            <button class="btn btn-primary" [disabled]="busy()">
+              {{ busy() ? 'Saving…' : 'Save entry' }}
+            </button>
+          </form>
+        </section>
+      }
+      <section id="daily" class="panel mb-4">
+        <div class="panel-heading">
+          <div>
+            <h2>Daily journal</h2>
+            <p>Your daily figures, with room to reflect.</p>
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button
+              class="btn btn-sm btn-outline-secondary"
+              [disabled]="!filtered().length"
+              (click)="export()"
+            >
+              Export view · CSV</button
+            ><button
+              class="btn btn-sm btn-outline-secondary"
+              [disabled]="!all().length"
+              (click)="export(true)"
+            >
+              Export all · CSV</button
+            ><button
+              class="btn btn-sm btn-outline-secondary"
+              [disabled]="!all().length || busy()"
+              (click)="exportExcel()"
+            >
+              Export all · Excel
+            </button>
+          </div>
+        </div>
+        <div class="table-controls">
+          <input
+            class="form-control"
+            type="search"
+            aria-label="Search entries"
+            placeholder="Search notes, dates, status…"
+            [ngModel]="search()"
+            (ngModelChange)="search.set($event); page.set(1)"
+          /><select
+            class="form-select"
+            aria-label="Filter status"
+            [ngModel]="status()"
+            (ngModelChange)="status.set($event); page.set(1)"
+          >
+            <option value="">All results</option>
+            <option>Profit</option>
+            <option>Loss</option>
+            <option>Flat</option></select
+          ><select
+            class="form-select"
+            aria-label="Rows per page"
+            [ngModel]="pageSize()"
+            (ngModelChange)="pageSize.set(+$event); page.set(1)"
+          >
+            <option [ngValue]="10">10 per page</option>
+            <option [ngValue]="25">25 per page</option>
+            <option [ngValue]="50">50 per page</option>
+          </select>
+        </div>
+        <p class="small text-secondary">
+          Search and status filters apply to this table and “Export view”. Dashboard and charts
+          follow the period selector.
+        </p>
+        <div class="table-responsive">
+          <table class="table journal-table align-middle">
+            <caption class="visually-hidden">
+              Daily trading journal. Select a column heading to sort.
+            </caption>
+            <thead>
+              <tr>
+                @for (
+                  col of [
+                    { key: 'date', label: 'Date' },
+                    { key: 'day', label: 'Day' },
+                    { key: 'month', label: 'Month' },
+                    { key: 'startingCapital', label: 'Starting capital' },
+                    { key: 'pnl', label: 'Profit / Loss' },
+                    { key: 'notes', label: 'Trades / Notes' },
+                    { key: 'endingCapital', label: 'Ending capital' },
+                    { key: 'dailyReturn', label: 'Daily return %' },
+                    { key: 'status', label: 'P&L status' },
+                    { key: 'cumulative', label: 'Cumulative P&L' },
+                    { key: 'tradeCount', label: 'Trade count' },
+                  ];
+                  track col.key
+                ) {
+                  <th
+                    scope="col"
+                    [attr.aria-sort]="
+                      sort() === col.key ? (descending() ? 'descending' : 'ascending') : 'none'
+                    "
+                  >
+                    <button (click)="order($any(col.key))">
+                      {{ col.label }}{{ sortLabel($any(col.key)) }}
+                    </button>
+                  </th>
+                }
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (e of visible(); track e.date) {
+                <tr>
+                  <td class="fw-semibold">{{ e.date }}</td>
+                  <td>{{ e.day }}</td>
+                  <td>{{ monthLabel(e.month) }}</td>
+                  <td>{{ money(e.startingCapital) }}</td>
+                  <td class="fw-semibold" [class.positive]="e.pnl > 0" [class.negative]="e.pnl < 0">
+                    {{ money(e.pnl) }}
+                  </td>
+                  <td class="notes-cell">{{ e.notes || '—' }}</td>
+                  <td>{{ money(e.endingCapital) }}</td>
+                  <td>
+                    {{ e.dailyReturn === null ? '—' : (e.dailyReturn | number: '1.2-2') + '%' }}
+                  </td>
+                  <td>
+                    <span
+                      class="result-badge"
+                      [class.profit]="e.pnl > 0"
+                      [class.loss]="e.pnl < 0"
+                      >{{ e.status }}</span
+                    >
+                  </td>
+                  <td>{{ money(e.cumulative) }}</td>
+                  <td>{{ e.tradeCount ?? '—' }}</td>
+                  <td>
+                    <div class="d-flex gap-2">
+                      <button
+                        class="btn btn-sm btn-outline-secondary"
+                        [attr.aria-label]="'Edit ' + e.date"
+                        (click)="edit(e)"
+                      >
+                        Edit</button
+                      ><button
+                        class="btn btn-sm btn-outline-danger"
+                        [attr.aria-label]="'Delete ' + e.date"
+                        (click)="deleting.set(e); error.set('')"
+                        [disabled]="busy()"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="12" class="text-center py-5 text-secondary">
+                    No entries match this view.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <small class="text-secondary"
+            >{{ filtered().length }} entries · Page {{ currentPage() }} of {{ pages() }}</small
+          >
+          <div class="d-flex gap-2">
+            <button
+              class="btn btn-sm btn-outline-secondary"
+              [disabled]="currentPage() <= 1"
+              (click)="page.set(currentPage() - 1)"
+            >
+              Previous</button
+            ><button
+              class="btn btn-sm btn-outline-secondary"
+              [disabled]="currentPage() >= pages()"
+              (click)="page.set(currentPage() + 1)"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </section>
+      <section id="monthly" class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Monthly summary</h2>
+            <p>The same day-based metrics as your Excel tracker.</p>
+          </div>
+        </div>
+        <div class="row g-3 mb-4 highlights">
+          <div class="col-6 col-lg-3">
+            <small>BEST MONTH</small
+            ><strong>{{ bestMonth() ? monthLabel(bestMonth()!.month) : '—' }}</strong
+            ><span>{{ money(bestMonth()?.pnl ?? null) }}</span>
+          </div>
+          <div class="col-6 col-lg-3">
+            <small>WORST MONTH</small
+            ><strong>{{ worstMonth() ? monthLabel(worstMonth()!.month) : '—' }}</strong
+            ><span>{{ money(worstMonth()?.pnl ?? null) }}</span>
+          </div>
+          <div class="col-6 col-lg-3">
+            <small>BEST DAILY P&L</small><strong>{{ money(bestDay()) }}</strong>
+          </div>
+          <div class="col-6 col-lg-3">
+            <small>WORST DAILY P&L</small><strong>{{ money(worstDay()) }}</strong>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Trading days</th>
+                <th>Profitable days</th>
+                <th>Loss days</th>
+                <th>Total P&L (₹)</th>
+                <th>Avg daily P&L (₹)</th>
+                <th>Win rate %</th>
+                <th>Period cumulative P&L (₹)</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (m of monthly(); track m.month) {
+                <tr>
+                  <td>{{ monthLabel(m.month) }}</td>
+                  <td>{{ m.days }}</td>
+                  <td>{{ m.wins }}</td>
+                  <td>{{ m.losses }}</td>
+                  <td [class.negative]="m.pnl < 0" [class.positive]="m.pnl > 0">
+                    {{ m.days ? money(m.pnl) : '—' }}
+                  </td>
+                  <td>{{ money(m.average) }}</td>
+                  <td>{{ m.winRate === null ? '—' : (m.winRate | number: '1.1-1') + '%' }}</td>
+                  <td>{{ money(m.cumulative) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="small text-secondary mb-0">
+          Flat days count in trading days and average P&amp;L; they are excluded from win rate.
+          Empty months are excluded from best / worst. Monthly cumulative totals start at the
+          selected period.
+        </p>
+      </section>
+      <footer>TRADING JOURNAL <span>Built for reflection, one day at a time.</span></footer>
+    </main>
+  </div>
+</div>
+@if (deleting()) {
+  <div class="confirm-backdrop">
+    <section
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="delete-title"
+      class="card confirm-card"
+    >
+      <h2 id="delete-title">Delete {{ deleting()!.date }}?</h2>
+      <p>
+        This removes the daily entry and recalculates your totals. Export first if you need a copy.
+      </p>
+      @if (error()) {
+        <p class="text-danger" role="alert">{{ error() }}</p>
+      }
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary" (click)="deleting.set(null)" [disabled]="busy()">
+          Cancel</button
+        ><button class="btn btn-danger" (click)="confirmDelete()" [disabled]="busy()">
+          {{ busy() ? 'Deleting…' : 'Delete entry' }}
+        </button>
+      </div>
+    </section>
+  </div>
+}
