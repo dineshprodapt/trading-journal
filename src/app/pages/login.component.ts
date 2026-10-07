@@ -5,17 +5,24 @@ import { AuthService, friendlyError } from '../core/auth.service';
 @Component({
   selector: 'app-login',
   imports: [FormsModule, RouterLink],
+  styles: [
+    `.login-avatar-frame { width: 160px; height: 160px; overflow: hidden; flex: 0 0 160px; }
+    .login-avatar { width: 100%; height: 100%; object-fit: cover; object-position: 64% center; }`,
+  ],
   template: ` <main class="login-wrap">
     <section class="login-story">
-      <div class="brand-mark">TJ</div>
-      <p class="eyebrow mt-4">TRADING JOURNAL</p>
+      <div class="login-avatar-frame rounded-circle">
+        <!-- Previous photo backup: <img class="login-avatar" src="assets/images/dinesh.JPEG?v=2" alt="Dinesh" /> -->
+        <img class="login-avatar" src="assets/images/dinesh2.jpg?v=1" alt="Dinesh" />
+      </div>
+      <p class="eyebrow mt-4">DINESH TRADING JOURNAL</p>
       <h1>A clearer view<br />of every trading day.</h1>
       <p>Record the decisions. Understand the results.<br />Build a journal you can learn from.</p>
       <div class="story-line"></div>
       <small>Your daily tracker, brought to life.</small>
     </section>
     <section class="login-panel card">
-      <p class="eyebrow">YOUR PRIVATE WORKSPACE</p>
+      <p class="eyebrow">MY PRIVATE WORKSPACE</p>
       <h2>{{ register ? 'Create your account' : 'Welcome back' }}</h2>
       <p class="text-secondary">Sign in to access your journal across devices.</p>
       @if (auth.error()) {
