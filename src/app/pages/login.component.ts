@@ -1,14 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, friendlyError } from '../core/auth.service';
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, RouterLink],
-  styles: [
-    `.login-avatar-frame { width: 160px; height: 160px; overflow: hidden; flex: 0 0 160px; }
-    .login-avatar { width: 100%; height: 100%; object-fit: cover; object-position: 64% center; }`,
-  ],
+  imports: [RouterLink],
+  styleUrl: './login.component.scss',
   template: ` <main class="login-wrap">
     <section class="login-story">
       <div class="login-avatar-frame rounded-circle">
@@ -23,63 +19,56 @@ import { AuthService, friendlyError } from '../core/auth.service';
     </section>
     <section class="login-panel card">
       <p class="eyebrow">MY PRIVATE WORKSPACE</p>
-      <h2>{{ register ? 'Create your account' : 'Welcome back' }}</h2>
-      <p class="text-secondary">Sign in to access your journal across devices.</p>
+      <div class="welcome-emblem" aria-hidden="true">✦</div>
+      <h2>Your next chapter starts here.</h2>
+      <p class="text-secondary">A fresh perspective. A little more clarity. Your journal awaits.</p>
       @if (auth.error()) {
         <div class="alert alert-warning" role="alert">{{ auth.error() }}</div>
       }
       @if (message()) {
-        <div class="alert alert-info" role="status">{{ message() }}</div>
+        <div class="alert alert-warning" role="alert">{{ message() }}</div>
       }
-      <form #form="ngForm" (ngSubmit)="submit()">
-        <label class="form-label" for="email">Email</label
-        ><input
-          id="email"
-          class="form-control mb-3"
-          type="email"
-          name="email"
-          [(ngModel)]="email"
-          required
-          email
-          autocomplete="email"
-        />
-        <label class="form-label" for="password">Password</label
-        ><input
-          id="password"
-          class="form-control mb-3"
-          type="password"
-          name="password"
-          [(ngModel)]="password"
-          required
-          minlength="8"
-          [autocomplete]="register ? 'new-password' : 'current-password'"
-        />
-        <button class="btn btn-primary w-100" [disabled]="form.invalid || busy() || !!auth.error()">
-          {{ busy() ? 'Please wait…' : register ? 'Create account' : 'Sign in' }}
-        </button>
-      </form>
-      <button
-        class="btn btn-outline-secondary mt-3"
-        [disabled]="busy() || !!auth.error()"
-        (click)="google()"
-      >
-        Continue with Google
-      </button>
-      <div class="d-flex flex-wrap justify-content-between gap-2 mt-4">
+      <div class="google-entry" [class.is-busy]="busy()">
+        <span class="sparkle sparkle-one" aria-hidden="true">✦</span>
+        <span class="sparkle sparkle-two" aria-hidden="true">✧</span>
+        <span class="sparkle sparkle-three" aria-hidden="true">✦</span>
         <button
-          class="btn btn-link p-0"
-          [disabled]="busy()"
-          (click)="register = !register; message.set('')"
+          type="button"
+          class="google-button"
+          [disabled]="busy() || !!auth.error()"
+          [attr.aria-busy]="busy()"
+          (click)="google()"
         >
-          {{ register ? 'Already have an account?' : 'Create an account' }}</button
-        ><button
-          class="btn btn-link p-0"
-          [disabled]="busy() || !email || !!auth.error()"
-          (click)="reset()"
-        >
-          Reset password
+          <svg class="google-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="#4285F4"
+              d="M21.6 12.23c0-.71-.06-1.39-.18-2.05H12v3.88h5.38a4.6 4.6 0 0 1-2 3.02v2.51h3.24c1.89-1.74 2.98-4.3 2.98-7.36Z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 22c2.7 0 4.96-.9 6.62-2.41l-3.24-2.51c-.9.6-2.04.96-3.38.96-2.6 0-4.8-1.76-5.59-4.12H3.07v2.59A10 10 0 0 0 12 22Z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M6.41 13.92a6 6 0 0 1 0-3.84V7.49H3.07a10 10 0 0 0 0 9.02l3.34-2.59Z"
+            />
+            <path
+              fill="#EA4335"
+              d="M12 5.96c1.47 0 2.79.5 3.83 1.5l2.87-2.87A9.6 9.6 0 0 0 12 2a10 10 0 0 0-8.93 5.49l3.34 2.59C7.2 7.72 9.4 5.96 12 5.96Z"
+            />
+          </svg>
+          <span>{{ busy() ? 'Connecting to Google…' : 'Continue with Google' }}</span>
+          @if (busy()) {
+            <span class="button-spinner" aria-hidden="true"></span>
+          } @else {
+            <span class="button-arrow" aria-hidden="true">→</span>
+          }
         </button>
+        <p class="entry-caption">One step closer to a clearer trading day.</p>
       </div>
+      <span class="visually-hidden" role="status">{{
+        busy() ? 'Opening Google sign-in. Please wait.' : ''
+      }}</span>
       @if (auth.demo) {
         <a routerLink="/journal" class="btn btn-warning mt-4">Open local demo</a>
       }
@@ -93,33 +82,19 @@ import { AuthService, friendlyError } from '../core/auth.service';
 export class LoginComponent {
   auth = inject(AuthService);
   router = inject(Router);
-  email = '';
-  password = '';
-  register = false;
   busy = signal(false);
   message = signal('');
-  async action(fn: () => Promise<unknown>, navigate = true) {
+  async google() {
+    if (this.busy() || this.auth.error()) return;
     this.busy.set(true);
     this.message.set('');
     try {
-      await fn();
-      if (navigate) await this.router.navigateByUrl('/journal');
+      await this.auth.google();
+      await this.router.navigateByUrl('/journal');
     } catch (e) {
       this.message.set(friendlyError(e));
     } finally {
       this.busy.set(false);
     }
-  }
-  submit() {
-    void this.action(() => this.auth.email(this.email.trim(), this.password, this.register));
-  }
-  google() {
-    void this.action(() => this.auth.google());
-  }
-  reset() {
-    void this.action(async () => {
-      await this.auth.reset(this.email.trim());
-      this.message.set('If an account exists, a reset email will arrive shortly.');
-    }, false);
   }
 }
