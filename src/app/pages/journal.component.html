@@ -1,7 +1,7 @@
 <div class="app-shell">
   <aside class="sidebar">
     <a class="brand" href="#"
-      ><span class="brand-mark">TJ</span><span>Trading<br /><strong>Journal</strong></span></a
+      ><span class="brand-mark">DK</span><span>Trading<br /><strong>Journal</strong></span></a
     >
     <p class="eyebrow nav-caption">WORKSPACE</p>
     <nav aria-label="Main navigation">
@@ -16,13 +16,43 @@
   </aside>
   <div class="workspace">
     <header class="topbar">
-      <span>WORKSPACE <span class="text-secondary mx-2">/</span> OVERVIEW</span>
-      <div class="d-flex align-items-center gap-3">
-        <span class="user-label">{{ auth.demo ? 'Demo workspace' : auth.user()?.email }}</span>
+      <div class="header-account">
+        <span class="avatar" aria-hidden="true">DK</span>
+        <div class="header-greeting">
+          <span class="header-eyebrow">YOUR DAILY PERSPECTIVE</span>
+          <span class="user-label" [title]="'Welcome, ' + displayName()"
+            >Welcome, {{ displayName() }}</span
+          >
+        </div>
         @if (!auth.demo) {
-          <button class="btn btn-sm btn-outline-secondary" (click)="logout()">Sign out</button>
+          <button class="btn btn-sm btn-outline-secondary signout-button" (click)="logout()">
+            Sign out
+          </button>
         }
-        <span class="avatar">TJ</span>
+      </div>
+      <div class="quote-strip" role="region" aria-label="Daily inspiration">
+        <span class="quote-label"><span aria-hidden="true">✦</span> MINDSET</span>
+        <div class="quote-window" [class.is-paused]="quotesPaused()">
+          <span class="visually-hidden">{{ quotes.join('. ') }}</span>
+          <div class="quote-track" aria-hidden="true">
+            @for (copy of [0, 1]; track copy) {
+              <div class="quote-group">
+                @for (quote of quotes; track quote) {
+                  <span class="quote-item">{{ quote }}<span class="quote-separator">✦</span></span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+        <button
+          type="button"
+          class="quote-toggle"
+          (click)="quotesPaused.set(!quotesPaused())"
+          [attr.aria-label]="quotesPaused() ? 'Resume scrolling quotes' : 'Pause scrolling quotes'"
+          [attr.aria-pressed]="quotesPaused()"
+        >
+          <span aria-hidden="true">{{ quotesPaused() ? '▶' : 'Ⅱ' }}</span>
+        </button>
       </div>
     </header>
     <main id="overview" class="main-content">

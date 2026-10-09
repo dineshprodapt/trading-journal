@@ -24,6 +24,25 @@ import { TrendChartComponent } from '../shared/trend-chart.component';
 })
 export class JournalComponent {
   auth = inject(AuthService);
+  displayName = computed(() => {
+    const user = this.auth.user();
+    return (
+      user?.providerData
+        .find((provider) => provider.providerId === 'google.com')
+        ?.displayName?.trim() ||
+      user?.displayName?.trim() ||
+      (this.auth.demo ? 'Demo Trader' : 'Trader')
+    );
+  });
+  quotesPaused = signal(false);
+  readonly quotes = [
+    'Trust your process',
+    'Patience builds progress',
+    'Discipline over impulse',
+    'Reflect. Refine. Repeat.',
+    'Small steps matter',
+    'Stay curious',
+  ];
   journal = inject(JournalService);
   exporter = inject(ExportService);
   router = inject(Router);
