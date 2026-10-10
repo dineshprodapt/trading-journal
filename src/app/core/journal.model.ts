@@ -129,3 +129,11 @@ export function monthlyRows(entries: Entry[], months?: string[]): MonthRow[] {
     };
   });
 }
+
+// Only negative results qualify; profitable and flat periods have no worst loss.
+export function worstLoss<T extends { pnl: number }>(rows: readonly T[]): T | null {
+  return rows.reduce<T | null>(
+    (worst, row) => (row.pnl < 0 && (worst === null || row.pnl < worst.pnl) ? row : worst),
+    null,
+  );
+}

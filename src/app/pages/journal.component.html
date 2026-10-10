@@ -1,13 +1,34 @@
 <div class="app-shell">
   <aside class="sidebar">
-    <a class="brand" href="#"
+    <a class="brand" href="#" (click)="$event.preventDefault(); scrollToSection('overview')"
       ><span class="brand-mark">DK</span><span>Trading<br /><strong>Journal</strong></span></a
     >
     <p class="eyebrow nav-caption">WORKSPACE</p>
     <nav aria-label="Main navigation">
-      <a href="#overview" class="active">◫ <span>Overview</span></a
-      ><a href="#daily">▤ <span>Daily journal</span></a
-      ><a href="#monthly">▥ <span>Monthly summary</span></a>
+      <button
+        type="button"
+        (click)="scrollToSection('overview')"
+        [class.active]="activeSection() === 'overview'"
+        [attr.aria-current]="activeSection() === 'overview' ? 'location' : null"
+      >
+        ◫ <span>Overview</span>
+      </button>
+      <button
+        type="button"
+        (click)="scrollToSection('daily')"
+        [class.active]="activeSection() === 'daily'"
+        [attr.aria-current]="activeSection() === 'daily' ? 'location' : null"
+      >
+        ▤ <span>Daily journal</span>
+      </button>
+      <button
+        type="button"
+        (click)="scrollToSection('monthly')"
+        [class.active]="activeSection() === 'monthly'"
+        [attr.aria-current]="activeSection() === 'monthly' ? 'location' : null"
+      >
+        ▥ <span>Monthly summary</span>
+      </button>
     </nav>
     <div class="sidebar-foot">
       <span class="status-dot"></span>{{ auth.demo ? 'Local demo' : 'Private journal' }}
@@ -55,7 +76,7 @@
         </button>
       </div>
     </header>
-    <main id="overview" class="main-content">
+    <main id="overview" tabindex="-1" class="main-content">
       @if (auth.demo) {
         <div class="demo-banner">
           <div>
@@ -304,7 +325,7 @@
           </form>
         </section>
       }
-      <section id="daily" class="panel mb-4">
+      <section id="daily" tabindex="-1" class="panel mb-4">
         <div class="panel-heading">
           <div>
             <h2>Daily journal</h2>
@@ -477,7 +498,7 @@
           </div>
         </div>
       </section>
-      <section id="monthly" class="panel">
+      <section id="monthly" tabindex="-1" class="panel">
         <div class="panel-heading">
           <div>
             <h2>Monthly summary</h2>
@@ -492,14 +513,15 @@
           </div>
           <div class="col-6 col-lg-3">
             <small>WORST MONTH</small
-            ><strong>{{ worstMonth() ? monthLabel(worstMonth()!.month) : '—' }}</strong
-            ><span>{{ money(worstMonth()?.pnl ?? null) }}</span>
+            ><strong>{{ worstMonth() ? monthLabel(worstMonth()!.month) : '-' }}</strong
+            ><span>{{ worstMonth() ? money(worstMonth()!.pnl) : '-' }}</span>
           </div>
           <div class="col-6 col-lg-3">
             <small>BEST DAILY P&L</small><strong>{{ money(bestDay()) }}</strong>
           </div>
           <div class="col-6 col-lg-3">
-            <small>WORST DAILY P&L</small><strong>{{ money(worstDay()) }}</strong>
+            <small>WORST DAILY P&L</small
+            ><strong>{{ worstDay() === null ? '-' : money(worstDay()) }}</strong>
           </div>
         </div>
         <div class="table-responsive">
@@ -536,8 +558,8 @@
         </div>
         <p class="small text-secondary mb-0">
           Flat days count in trading days and average P&amp;L; they are excluded from win rate.
-          Empty months are excluded from best / worst. Monthly cumulative totals start at the
-          selected period.
+          Empty months are excluded from best / worst. Worst values show only losses; a hyphen means
+          no loss in the selected period. Monthly cumulative totals start at the selected period.
         </p>
       </section>
       <footer>TRADING JOURNAL <span>Built for reflection, one day at a time.</span></footer>

@@ -10,6 +10,7 @@ import {
   dailyRows,
   summary,
   monthlyRows,
+  worstLoss,
   money,
   monthLabel,
   today,
@@ -34,6 +35,7 @@ export class JournalComponent {
       (this.auth.demo ? 'Demo Trader' : 'Trader')
     );
   });
+  activeSection = signal<'overview' | 'daily' | 'monthly'>('overview');
   quotesPaused = signal(false);
   readonly quotes = [
     'Trust your process',
@@ -99,13 +101,11 @@ export class JournalComponent {
   );
   activeMonths = computed(() => this.monthly().filter((m) => m.days > 0));
   bestMonth = computed(() => [...this.activeMonths()].sort((a, b) => b.pnl - a.pnl)[0]);
-  worstMonth = computed(() => [...this.activeMonths()].sort((a, b) => a.pnl - b.pnl)[0]);
+  worstMonth = computed(() => worstLoss(this.activeMonths()));
   bestDay = computed(() =>
     this.period().length ? Math.max(...this.period().map((e) => e.pnl)) : null,
   );
-  worstDay = computed(() =>
-    this.period().length ? Math.min(...this.period().map((e) => e.pnl)) : null,
-  );
+  worstDay = computed(() => worstLoss(this.period())?.pnl ?? null);
   filtered = computed(() =>
     this.period().filter(
       (e) =>
@@ -143,6 +143,18 @@ export class JournalComponent {
   constructor() {
     effect(() => {
       if (!this.auth.demo && !this.auth.user()) void this.router.navigateByUrl('/login');
+    });
+  }
+  scrollToSection(section: 'overview' | 'daily' | 'monthly') {
+    const target = document.getElementById(section);
+    if (!target) return;
+    this.activeSection.set(section);
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'instant'
+        : 'smooth',
+      block: 'start',
     });
   }
   changeMonth(value: string) {

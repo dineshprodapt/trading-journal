@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   dailyRows,
   monthlyRows,
+  worstLoss,
   summary,
   toPaise,
   validateEntry,
@@ -113,4 +114,20 @@ test('Excel export produces readable sheets with numeric money and text notes', 
     URL.createObjectURL = oldCreate;
     Object.assign(globalThis, { document: oldDocument });
   }
+});
+
+test('worst loss excludes profits and flat results, and chooses the largest loss', () => {
+  assert.equal(worstLoss([]), null);
+  assert.equal(worstLoss([e('2026-10-01', 100), e('2026-10-02', 0)]), null);
+  const entries = [
+    e('2026-10-01', 500),
+    e('2026-10-02', -100),
+    e('2026-11-01', -300),
+    e('2026-12-01', -200),
+  ];
+  assert.equal(worstLoss(entries)?.pnl, -300);
+  const months = monthlyRows(entries, ['2026-10', '2026-11', '2026-12', '2027-01']);
+  assert.equal(worstLoss(months)?.month, '2026-11');
+  assert.equal(worstLoss(months.filter((m) => m.month === '2026-10')), null);
+  assert.equal(worstLoss(entries.filter((e) => e.date.startsWith('2026-10')))?.pnl, -100);
 });
