@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "node --import tsx --test tests/calculations.test.ts",
     "test:rules": "firebase emulators:exec --only firestore --project demo-trading-journal \"node --import tsx --test tests/firestore.rules.test.ts\"",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "build:pages": "ng build --configuration production,github-pages"
   },
   "private": true,
   "packageManager": "npm@11.9.0",

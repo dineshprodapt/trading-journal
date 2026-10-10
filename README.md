@@ -125,6 +125,19 @@ npm run build
 
 Output: `dist/trading-journal/browser/`. Do not deploy the development server. Production uses real Firebase mode; configure Firebase before publishing.
 
+### GitHub Pages
+
+Target: https://dineshprodapt.github.io/trading-journal/
+
+1. Open repository **Settings → Pages → Build and deployment** and set **Source** to **GitHub Actions**.
+2. In Firebase project `trading-journal-55b0f`, open **Authentication → Settings → Authorized domains** and add `dineshprodapt.github.io` (no `https://` or path).
+3. Open **Actions → Deploy Trading Journal to GitHub Pages → Run workflow**, select `main`, and run it. Later pushes to `main` deploy automatically.
+4. Wait for both build and deploy jobs to succeed, then open the target URL and sign in with Google.
+
+The workflow installs locked dependencies, runs calculation tests, and builds using `npm run build:pages`. Output is `dist/trading-journal/browser/`. The Pages-only configuration sets `/trading-journal/` as the base path and uses hash routing (`#/login`, `#/journal`) so bookmarks and refresh work on static hosting. Other build configurations keep their existing routing.
+
+Firebase remains the backend; use the same Google account to access existing entries. This workflow does not deploy Firestore rules or change Firebase settings. If deployment reports Pages is not enabled, complete step 1 and rerun the workflow.
+
 ### Firebase Hosting
 
 Set up Firebase and deploy rules as above, then:

@@ -84,6 +84,15 @@
                   "with": "src/environments/environment.development.ts"
                 }
               ]
+            },
+            "github-pages": {
+              "baseHref": "/trading-journal/",
+              "fileReplacements": [
+                {
+                  "replace": "src/app/app.config.ts",
+                  "with": "src/app/app.config.pages.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
