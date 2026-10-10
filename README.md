@@ -320,3 +320,11 @@ Verified during implementation, 7 October 2026:
 - Free quota and pricing: https://firebase.google.com/docs/firestore/pricing
 
 This is a manual trading journal, not a broker integration or automated trading system.
+
+## Temporary account restriction
+
+Only the verified Google account `dineshmick@gmail.com` is currently allowed. Other accounts are signed out, shown an Unauthorized access popup, and returned to login. Restored sessions are checked too. The app validates access before starting journal reads.
+
+Policy: `src/app/core/access-policy.ts`. To reopen access later, set `restricted: false` and change `restrictedAccess()` in `firestore.rules` to return `false`; deploy both. To extend the allowlist, update both email lists instead.
+
+**Required Firebase step:** deploy the updated rules using `npx firebase deploy --only firestore:rules --project trading-journal-55b0f`, or paste the entire `firestore.rules` file into Firebase Console → Firestore Database → Rules and Publish. GitHub Pages only deploys the frontend; committing rules does not activate them in Firebase. The rules keep owner-only access and schema validation even when the temporary restriction is disabled. Firebase Authentication may still list rejected accounts because Google authentication happens before application authorization.

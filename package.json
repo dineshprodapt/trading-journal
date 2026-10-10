@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "node --import tsx --test tests/calculations.test.ts",
+    "test": "node --import tsx --test tests/calculations.test.ts tests/access-policy.test.ts",
     "test:rules": "firebase emulators:exec --only firestore --project demo-trading-journal \"node --import tsx --test tests/firestore.rules.test.ts\"",
     "test:e2e": "playwright test",
     "build:pages": "ng build --configuration production,github-pages"

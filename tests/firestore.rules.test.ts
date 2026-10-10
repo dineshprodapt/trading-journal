@@ -26,7 +26,13 @@ after(async () => {
   await env?.cleanup();
 });
 test('only owner can CRUD; invalid schema and stale revisions are rejected', async () => {
-  const alice = env.authenticatedContext('alice').firestore(),
+  const alice = env
+      .authenticatedContext('alice', {
+        email: 'dineshmick@gmail.com',
+        email_verified: true,
+        firebase: { sign_in_provider: 'google.com' },
+      })
+      .firestore(),
     bob = env.authenticatedContext('bob').firestore(),
     anon = env.unauthenticatedContext().firestore();
   const path = 'users/alice/entries/2026-10-01';
@@ -43,4 +49,47 @@ test('only owner can CRUD; invalid schema and stale revisions are rejected', asy
   await assertFails(updateDoc(doc(alice, path), { revision: 2, pnl: 1.5 }));
   await assertSucceeds(updateDoc(doc(alice, path), { revision: 2, pnl: 70000 }));
   await assertSucceeds(deleteDoc(doc(alice, path)));
+});
+
+test('restricted access denies other accounts even for their own documents', async () => {
+  for (const [uid, claims] of [
+    [
+      'other',
+      {
+        email: 'other@gmail.com',
+        email_verified: true,
+        firebase: { sign_in_provider: 'google.com' },
+      },
+    ],
+    [
+      'unverified',
+      {
+        email: 'dineshmick@gmail.com',
+        email_verified: false,
+        firebase: { sign_in_provider: 'google.com' },
+      },
+    ],
+    [
+      'password',
+      {
+        email: 'dineshmick@gmail.com',
+        email_verified: true,
+        firebase: { sign_in_provider: 'password' },
+      },
+    ],
+    ['missing', {}],
+  ] as const) {
+    const db = env.authenticatedContext(uid, claims).firestore();
+    const path = `users/${uid}/entries/2026-10-01`;
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), path), entry);
+    });
+    await assertFails(getDoc(doc(db, path)));
+    await assertFails(getDocs(collection(db, `users/${uid}/entries`)));
+    await assertFails(updateDoc(doc(db, path), { revision: 2, pnl: 100 }));
+    await assertFails(deleteDoc(doc(db, path)));
+    await assertFails(
+      setDoc(doc(db, `users/${uid}/entries/2026-10-02`), { ...entry, date: '2026-10-02' }),
+    );
+  }
 });

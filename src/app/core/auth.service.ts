@@ -1,4 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { isAllowedAccount, unauthorizedMessage } from './access-policy';
 import { initializeApp } from 'firebase/app';
 import {
   Auth,
@@ -6,9 +8,6 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  sendPasswordResetEmail,
   signOut,
   setPersistence,
   browserSessionPersistence,
@@ -19,6 +18,8 @@ import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private router = inject(Router);
+  private signingIn = false;
   readonly demo = environment.demo;
   readonly user = signal<User | null>(null);
   readonly error = signal('');
@@ -48,8 +49,8 @@ export class AuthService {
         onAuthStateChanged(
           this.auth!,
           (user) => {
-            this.user.set(user);
-            resolve();
+            if (this.signingIn) return;
+            void this.acceptUser(user).then(() => resolve(), reject);
           },
           reject,
         ),
@@ -63,20 +64,35 @@ export class AuthService {
     if (!this.auth || this.error()) throw Error(this.error() || 'Firebase is unavailable.');
     return this.auth;
   }
-  async email(email: string, password: string, register: boolean) {
-    const auth = await this.client();
-    const result = await (register
-      ? createUserWithEmailAndPassword(auth, email, password)
-      : signInWithEmailAndPassword(auth, email, password));
-    this.user.set(result.user);
+  private async acceptUser(user: User | null): Promise<boolean> {
+    this.user.set(null);
+    if (!user) return false;
+    const token = await user.getIdTokenResult();
+    if (!isAllowedAccount(user.email, user.emailVerified, token.signInProvider)) {
+      try {
+        await signOut(this.auth!);
+      } finally {
+        window.alert(unauthorizedMessage);
+        await this.router.navigateByUrl('/login', { replaceUrl: true });
+      }
+      return false;
+    }
+    // Do not expose an account to the journal until access is validated.
+    if (this.auth?.currentUser?.uid !== user.uid) return false;
+    this.user.set(user);
+    return true;
   }
-  async google() {
+  async google(): Promise<boolean> {
     const auth = await this.client();
-    const result = await signInWithPopup(auth, new GoogleAuthProvider());
-    this.user.set(result.user);
-  }
-  async reset(email: string) {
-    await sendPasswordResetEmail(await this.client(), email);
+    this.signingIn = true;
+    try {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+      const result = await signInWithPopup(auth, provider);
+      return await this.acceptUser(result.user);
+    } finally {
+      this.signingIn = false;
+    }
   }
   async logout() {
     await signOut(await this.client());

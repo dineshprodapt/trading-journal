@@ -1,7 +1,18 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+    // Temporary restriction: set false AND update access-policy.ts to reopen access.
+    function restrictedAccess() { return true; }
+    function allowedAccount() {
+      return !restrictedAccess() || (
+        request.auth.token.email_verified == true
+        && request.auth.token.firebase.sign_in_provider == 'google.com'
+        && request.auth.token.email.lower() in ['dineshmick@gmail.com']
+      );
+    }
+    function owner(uid) {
+      return request.auth != null && request.auth.uid == uid && allowedAccount();
+    }
     function valid(e, date) {
       return e.keys().hasAll(['date','startingCapital','pnl','notes','tradeCount','revision'])
         && e.keys().hasOnly(['date','startingCapital','pnl','notes','tradeCount','revision'])

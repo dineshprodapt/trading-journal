@@ -89,8 +89,9 @@ export class LoginComponent {
     this.busy.set(true);
     this.message.set('');
     try {
-      await this.auth.google();
-      await this.router.navigateByUrl('/journal');
+      if (await this.auth.google()) {
+        await this.router.navigateByUrl('/journal');
+      }
     } catch (e) {
       this.message.set(friendlyError(e));
     } finally {
