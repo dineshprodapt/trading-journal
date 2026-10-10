@@ -3,6 +3,8 @@ name: Deploy Trading Journal to GitHub Pages
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
   workflow_dispatch:
 
 permissions:
@@ -14,6 +16,9 @@ concurrency:
 
 jobs:
   build:
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -24,9 +29,23 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build:pages
+      - name: Update tracked build files
+        run: |
+          mkdir -p docs
+          rsync -a --delete dist/trading-journal/browser/ docs/
+          touch docs/.nojekyll
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- docs
+          if git diff --cached --quiet; then
+            echo "Build files are unchanged."
+          else
+            git commit -m "chore: update production build [skip ci]"
+            git push origin HEAD:main
+          fi
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: dist/trading-journal/browser
+          path: docs
 
   deploy:
     needs: build
