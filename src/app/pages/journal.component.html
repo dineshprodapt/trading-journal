@@ -550,7 +550,7 @@
                   </td>
                   <td>{{ money(m.average) }}</td>
                   <td>{{ m.winRate === null ? '—' : (m.winRate | number: '1.1-1') + '%' }}</td>
-                  <td>{{ money(m.cumulative) }}</td>
+                  <td>{{ m.days ? money(m.cumulative) : '—' }}</td>
                 </tr>
               }
             </tbody>

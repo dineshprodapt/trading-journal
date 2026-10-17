@@ -18,10 +18,10 @@ import { AuthService, friendlyError } from '../core/auth.service';
       <small>Your daily tracker, brought to life.</small>
     </section>
     <section class="login-panel card">
-      <p class="eyebrow">MY PRIVATE WORKSPACE</p>
-      <div class="welcome-emblem" aria-hidden="true">✦</div>
-      <h2>Your next chapter starts here.</h2>
-      <p class="text-secondary">A fresh perspective. A little more clarity. Your journal awaits.</p>
+      <p class="eyebrow desktop-welcome">MY PRIVATE WORKSPACE</p>
+      <div class="welcome-emblem desktop-welcome" aria-hidden="true">✦</div>
+      <h2 class="desktop-welcome">Your next chapter starts here.</h2>
+      <p class="text-secondary desktop-welcome">A fresh perspective. A little more clarity. Your journal awaits.</p>
       @if (auth.error()) {
         <div class="alert alert-warning" role="alert">{{ auth.error() }}</div>
       }
@@ -70,9 +70,9 @@ import { AuthService, friendlyError } from '../core/auth.service';
         busy() ? 'Opening Google sign-in. Please wait.' : ''
       }}</span>
       @if (auth.demo) {
-        <a routerLink="/journal" class="btn btn-warning mt-4">Open local demo</a>
+        <a routerLink="/journal" class="btn btn-warning demo-entry">Open local demo</a>
       }
-      <small class="text-secondary mt-4"
+      <small class="text-secondary session-note"
         >Sign-in lasts for this browser session. Cloud records remain in your Firebase
         account.</small
       >

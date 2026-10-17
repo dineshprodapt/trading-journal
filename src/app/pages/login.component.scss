@@ -158,6 +158,20 @@
     transform: rotate(360deg);
   }
 }
+.demo-entry,
+.session-note {
+  margin-top: 1.5rem;
+}
+@media (max-width: 767px) {
+  .desktop-welcome {
+    display: none;
+  }
+  .google-entry,
+  .demo-entry,
+  .session-note {
+    margin-top: 0;
+  }
+}
 @media (max-width: 380px) {
   .google-button {
     gap: 8px;
