@@ -70,7 +70,7 @@ Production builds use `src/environments/environment.ts`, where demo is already *
 | Starting Capital (₹)    | Optional, manually entered each day. Blank and zero are distinct.                              |
 | Profit / Loss (₹)       | Required net P&L after brokerage and other charges. Negative = loss; zero = recorded flat day. |
 | Trades / Notes          | Free text, maximum 2,000 characters.                                                           |
-| Ending Capital (₹)      | Starting capital + P&L; blank if starting capital is absent.                                   |
+| Ending Capital (₹)      | Starting capital + all-time cumulative P&L through that date; blank if starting capital is absent.                                   |
 | Daily Return %          | P&L ÷ starting capital × 100; blank when capital is absent or zero.                            |
 | P&L Status              | Profit / Loss / Flat based on the P&L sign.                                                    |
 | Cumulative P&L (₹)      | Sum in chronological date order across all saved records.                                      |
@@ -78,7 +78,7 @@ Production builds use `src/environments/environment.ts`, where demo is already *
 
 The date selector permits 1900–2099; the default month list includes **October 2026 through October 2027** and expands for other saved dates. No records are created for unrecorded dates. No trading-day/holiday calendar is assumed.
 
-Starting capital is **not carried forward**. Reflect deposits/withdrawals in that day's opening capital; do not enter them as trading P&L. Monetary values are stored as integer **paise** to avoid floating-point accumulation errors. Both UI and service validation reject more than two decimal places. Capital is limited to ₹10 billion; P&L to ±₹10 billion per day. Trade count is 0–100,000.
+Starting capital is **not carried forward**. Ending capital adds all-time cumulative P&L to the starting capital entered for each date. Monetary values are stored as integer **paise** to avoid floating-point accumulation errors. Both UI and service validation reject more than two decimal places. Capital is limited to ₹10 billion; P&L to ±₹10 billion per day. Trade count is 0–100,000.
 
 The dashboard follows the **Period** selector. It shows recorded trade-count total, missing-count days, net P&L, profitable/loss/flat days, day win rate and win/loss day ratio. It cannot infer individual winning trades from a daily net P&L. For example, a day with three winning trades and two losses is still just one profitable/loss/flat day in these metrics.
 
@@ -96,6 +96,8 @@ The dashboard follows the **Period** selector. It shows recorded trade-count tot
 ## 4. Storage, authentication and security
 
 Document path: `users/{firebaseUid}/entries/{YYYY-MM-DD}`.
+
+Ending capital and cumulative P&L are calculated from saved entries, not stored in Firestore. Existing records automatically use the updated formula when loaded by the updated app; no database migration or resaving is required. Previously downloaded exports must be generated again to reflect the new calculation.
 
 `firestore.rules` verifies ownership for reads/writes/deletes, accepts only the known fields, validates types and numeric bounds, and requires incrementing revisions on updates. Every unlisted collection is denied by default. Rules are authoritative; the Angular route guard only controls navigation.
 

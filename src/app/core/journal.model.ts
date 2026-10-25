@@ -86,7 +86,7 @@ export function dailyRows(entries: Entry[]): DailyRow[] {
         ...e,
         day: new Date(e.date + 'T12:00:00').toLocaleDateString('en-IN', { weekday: 'short' }),
         month: e.date.slice(0, 7),
-        endingCapital: e.startingCapital === null ? null : e.startingCapital + e.pnl,
+        endingCapital: e.startingCapital === null ? null : e.startingCapital + cumulative,
         dailyReturn: e.startingCapital ? (e.pnl / e.startingCapital) * 100 : null,
         status: e.pnl > 0 ? 'Profit' : e.pnl < 0 ? 'Loss' : 'Flat',
         cumulative,

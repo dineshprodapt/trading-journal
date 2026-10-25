@@ -27,6 +27,8 @@ test('blank vs zero capital and flat days preserve workbook semantics', () => {
     [null, null, 0],
   );
   assert.equal(rows[0].endingCapital, null);
+  assert.equal(rows[1].endingCapital, 25000);
+  assert.equal(rows[2].endingCapital, 125000);
   assert.equal(s.days, 3);
   assert.equal(s.winRate, 50);
   assert.equal(s.average, 25000 / 3);
@@ -44,6 +46,13 @@ test('chronological cumulative totals recalculate after an earlier edit and dele
     [2000, 2500, 2300],
   );
   assert.equal(dailyRows(entries.slice(0, 2))[1].cumulative, 300);
+});
+test('ending capital recalculates existing records using all-time cumulative P&L', () => {
+  const entries = [e('2026-11-01', -200, 120000), e('2026-10-02', 500), e('2026-10-01', 1000)];
+  assert.deepEqual(dailyRows(entries).map((r) => r.endingCapital), [101000, 101500, 121300]);
+  entries[2].pnl = 2000;
+  assert.deepEqual(dailyRows(entries).map((r) => r.endingCapital), [102000, 102500, 122300]);
+  assert.deepEqual(dailyRows(entries.slice(0, 2)).map((r) => r.endingCapital), [100500, 120300]);
 });
 test('monthly summary includes empty months without inventing win rates', () => {
   const months = monthlyRows(
