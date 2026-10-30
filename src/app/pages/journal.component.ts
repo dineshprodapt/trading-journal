@@ -162,6 +162,8 @@ export class JournalComponent {
     }
     const target = document.getElementById(section);
     if (!target) return;
+    const headerHeight = document.querySelector('.topbar')?.getBoundingClientRect().height ?? 0;
+    target.style.scrollMarginTop = `${headerHeight + 20}px`;
     this.activeSection.set(section);
     target.focus({ preventScroll: true });
     target.scrollIntoView({

@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { ThemeService } from './theme.service';
 import { isAllowedAccount, unauthorizedMessage } from './access-policy';
 import { initializeApp } from 'firebase/app';
 import {
@@ -19,6 +20,7 @@ import { environment } from '../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private router = inject(Router);
+  private readonly theme = inject(ThemeService);
   private signingIn = false;
   readonly demo = environment.demo;
   readonly user = signal<User | null>(null);
@@ -66,7 +68,10 @@ export class AuthService {
   }
   private async acceptUser(user: User | null): Promise<boolean> {
     this.user.set(null);
-    if (!user) return false;
+    if (!user) {
+      this.theme.setTheme('light');
+      return false;
+    }
     const token = await user.getIdTokenResult();
     if (!isAllowedAccount(user.email, user.emailVerified, token.signInProvider)) {
       try {
@@ -79,6 +84,7 @@ export class AuthService {
     }
     // Do not expose an account to the journal until access is validated.
     if (this.auth?.currentUser?.uid !== user.uid) return false;
+    this.theme.setTheme('dark');
     this.user.set(user);
     return true;
   }
@@ -96,6 +102,7 @@ export class AuthService {
   }
   async logout() {
     await signOut(await this.client());
+    this.theme.setTheme('light');
     this.user.set(null);
   }
 }

@@ -190,6 +190,9 @@ app-trading-rules .rule-card .rule-green { color: #357000; }
   width: calc(100% - 220px);
 }
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   background: linear-gradient(115deg, #fff, #f0f5e9);
   border-bottom: 1px solid var(--line);
   padding: 20px 38px 0;
@@ -412,7 +415,7 @@ app-trading-rules .rule-card .rule-green { color: #357000; }
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 11px;
-  scroll-margin-top: 20px;
+  scroll-margin-top: 160px;
 }
 .panel-heading {
   display: flex;
