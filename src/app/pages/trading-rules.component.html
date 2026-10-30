@@ -1,0 +1,20 @@
+<section class="rules-hero" aria-labelledby="rules-title">
+  <div class="rules-kicker">THE DISCIPLINE PLAYBOOK <span>18 PERSONAL RULES</span></div>
+  <h1 id="rules-title">My Trading Rules</h1>
+  <p>{{ config.subtitle }} [ <span class="rules-scope">{{ config.scope }}</span> ]</p>
+  <div class="rules-mantra"><span aria-hidden="true">✦</span> <strong>{{ config.reminder }}</strong></div>
+</section>
+<div class="rules-intro"><h2>A clear plan. Every trading day.</h2><span>Read. Remember. Follow.</span></div>
+<ol class="rules-grid">
+  @for (rule of config.rules; track rule.title; let index = $index) {
+    <li class="rule-card" [class.rule-card-risk]="'limits' in rule">
+      <div class="rule-card-heading"><span class="rule-number">{{ (index + 1).toString().padStart(2, '0') }}</span><h3>{{ rule.title }}</h3></div>
+      <p [innerHTML]="rule.html"></p>
+      @if ('limits' in rule) {
+        <ul class="rule-limits">
+          @for (limit of rule.limits; track limit) { <li [innerHTML]="limit"></li> }
+        </ul>
+      }
+    </li>
+  }
+</ol>

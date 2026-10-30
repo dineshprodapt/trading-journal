@@ -1,7 +1,9 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, afterNextRender, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TradingRulesComponent } from './trading-rules.component';
+import { ThemeToggleComponent } from '../shared/theme-toggle.component';
 import { AuthService, friendlyError } from '../core/auth.service';
 import { JournalService } from '../core/journal.service';
 import {
@@ -20,10 +22,12 @@ import { ExportService } from '../core/export.service';
 import { TrendChartComponent } from '../shared/trend-chart.component';
 @Component({
   selector: 'app-journal',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, TrendChartComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TrendChartComponent, RouterLink, TradingRulesComponent, ThemeToggleComponent],
   templateUrl: './journal.component.html',
 })
 export class JournalComponent {
+  private readonly route = inject(ActivatedRoute);
+  readonly isRulesPage = this.route.snapshot.data['tradingRules'] === true;
   auth = inject(AuthService);
   displayName = computed(() => {
     const user = this.auth.user();
@@ -141,11 +145,21 @@ export class JournalComponent {
   chartDates = computed(() => this.period().map((e) => e.date));
   chartCumulative = computed(() => this.period().map((e) => e.cumulative));
   constructor() {
+    afterNextRender(() => {
+      const section = this.route.snapshot.fragment;
+      if (!this.isRulesPage && (section === 'overview' || section === 'daily' || section === 'monthly')) {
+        this.scrollToSection(section);
+      }
+    });
     effect(() => {
       if (!this.auth.demo && !this.auth.user()) void this.router.navigateByUrl('/login');
     });
   }
   scrollToSection(section: 'overview' | 'daily' | 'monthly') {
+    if (this.isRulesPage) {
+      void this.router.navigate(['/journal'], { fragment: section });
+      return;
+    }
     const target = document.getElementById(section);
     if (!target) return;
     this.activeSection.set(section);

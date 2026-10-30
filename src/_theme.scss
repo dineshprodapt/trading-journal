@@ -1,0 +1,92 @@
+app-theme-toggle { display: inline-flex; flex-shrink: 0; }
+.theme-toggle {
+  display: grid; place-items: center; width: 40px; height: 40px;
+  border: 1px solid var(--line); border-radius: 50%;
+  background: var(--bs-body-bg); color: var(--ink); cursor: pointer;
+}
+.theme-toggle svg { width: 21px; height: 21px; }
+.theme-toggle:hover { border-color: var(--green); }
+.theme-toggle:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.login-theme-toggle { position: absolute; top: 18px; right: 20px; z-index: 2; }
+
+html[data-bs-theme='dark'] {
+  --ink: #e0ece6;
+  --muted: #a3b6ac;
+  --green: #80d2b1;
+  --line: #344b40;
+  --bs-body-color: var(--ink);
+  --bs-body-color-rgb: 224, 236, 230;
+  --bs-body-bg: #101b17;
+  --bs-body-bg-rgb: 16, 27, 23;
+  --bs-secondary-color: #a3b6ac;
+  --bs-secondary-rgb: 163, 182, 172;
+  --bs-border-color: var(--line);
+  --bs-tertiary-bg: #24382e;
+  --bs-emphasis-color: #f2f8f4;
+  --bs-emphasis-color-rgb: 242, 248, 244;
+  --surface: #1a2a22;
+  --surface-raised: #24382e;
+  --rule-body-color: #cfddd4;
+  --rule-emphasis-color: #e5bc79;
+
+  body { background: var(--bs-body-bg); color: var(--ink); }
+  .sidebar { background: #0c1712; border-right: 1px solid var(--line); }
+  .topbar { background: linear-gradient(115deg, #1b2b23, #213429); }
+  .metric-card, .panel, .confirm-card, .login-panel { background: var(--surface); color: var(--ink); border-color: var(--line); }
+  .metric-card.featured { background: #233d2e; border-color: #41624b; }
+  // Overview-only palette: keep the surrounding dark theme unchanged.
+  .overview-chart-panel, #monthly {
+    background: rgb(43, 34, 46);
+    border-color: rgb(76, 57, 82);
+  }
+  .metric-card.palette-graphite { background: rgb(38, 40, 42); border-color: rgb(68, 72, 76); }
+  .metric-card.palette-charcoal { background: rgb(48, 50, 48); border-color: rgb(78, 82, 78); }
+  .metric-card.palette-teal { background: rgb(24, 48, 48); border-color: rgb(47, 80, 80); }
+  .metric-card.palette-olive { background: rgb(43, 46, 34); border-color: rgb(75, 81, 57); }
+  .metric-card.featured h2, .positive, .chart-key { color: #80d2b1 !important; }
+  .negative { color: #ff969e !important; }
+  .eyebrow, .header-eyebrow, footer { color: #b1c69e; }
+  .quote-strip { border-color: var(--line); }
+  .quote-label, .quote-item { color: #c1d1b1; }
+  .quote-item[data-quote-color='0'] { color: #90d8b2; }
+  .quote-item[data-quote-color='1'] { color: #f0ca80; }
+  .quote-item[data-quote-color='2'] { color: #bcb0ef; }
+  .quote-item[data-quote-color='3'] { color: #8cd3e6; }
+  .quote-item[data-quote-color='4'] { color: #efa9b6; }
+  .quote-item[data-quote-color='5'] { color: #d3df91; }
+  .quote-toggle { background: var(--surface); color: #c1d1b1; border-color: var(--line); }
+  .quote-toggle:hover { background: var(--surface-raised); }
+  .form-control, .form-select { background-color: #132119; color: var(--ink); border-color: #486052; }
+  .form-control::placeholder { color: #a3b6ac; opacity: 1; }
+  .form-control:focus, .form-select:focus { border-color: var(--green); box-shadow: 0 0 0 .2rem #80d2b126; }
+  .btn-outline-secondary {
+    --bs-btn-color: #c7d8ce; --bs-btn-border-color: #587062;
+    --bs-btn-hover-bg: #344f3f; --bs-btn-hover-color: #fff; --bs-btn-hover-border-color: #80d2b1;
+    --bs-btn-disabled-color: #81968a; --bs-btn-disabled-border-color: #3c5145;
+  }
+  .btn-primary { --bs-btn-bg: #287e60; --bs-btn-border-color: #3d9978; --bs-btn-hover-bg: #329370; --bs-btn-hover-border-color: #59b995; }
+  .table { --bs-table-color: #d6e4dc; --bs-table-border-color: var(--line); --bs-table-hover-color: #eff7f2; --bs-table-hover-bg: #ffffff08; }
+  .table thead th, .highlights { background: #22362b; color: #bdcec3; }
+  .table th button:hover { color: var(--green); }
+  .result-badge { background: #344338; color: #dae4dc; }
+  .result-badge.profit { background: #244b36; color: #9ce0b9; }
+  .result-badge.loss { background: #4c2e32; color: #ffabb1; }
+  .empty-state { border-color: #536e5d; }
+  .demo-banner { background: #35301e; color: #e4d6a4; border-color: #655a35; }
+  .confirm-backdrop { background: #0009; }
+  .login-wrap { background: var(--bs-body-bg); }
+  .login-story { background: #0c2117; }
+  .login-panel { background: radial-gradient(ellipse at top right, #2b4026, transparent 65%), var(--surface); }
+  .welcome-emblem, .google-entry { background: var(--surface-raised); border-color: #465c3a; color: #cee0a9; }
+  .google-button { background: #1c3023; border-color: #5b7453; color: var(--ink); }
+  .entry-caption { color: #bacdad; }
+  .rules-hero { background: radial-gradient(ellipse at top right, #31543a, transparent 65%), #122d21; }
+  .rules-mantra { background: #30471e; color: #d5efaf; }
+  .rules-intro > span { color: var(--muted); }
+  .rule-card { background: var(--surface); border-color: var(--line); }
+  .rule-number { background: #2b4532; color: #c4dfb1; }
+  .rule-card-risk { background: #2d2c1c; border-color: #706331; }
+  app-trading-rules .rule-red, app-trading-rules .rule-red strong { color: #ff9b91; }
+  app-trading-rules .rule-green { color: #a8db7c; }
+  #daily { background: rgb(24, 48, 48); border-color: rgb(47, 80, 80); }
+}

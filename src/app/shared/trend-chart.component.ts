@@ -4,16 +4,19 @@ import {
   OnDestroy,
   afterNextRender,
   effect,
+  inject,
   input,
   viewChild,
 } from '@angular/core';
 import Chart from 'chart.js/auto';
+import { ThemeService } from '../core/theme.service';
 @Component({
   selector: 'app-trend-chart',
   template:
     '<div class="chart-frame"><canvas #canvas role="img" [attr.aria-label]="title()">{{title()}}. Values are also available in the tables below.</canvas></div>',
 })
 export class TrendChartComponent implements OnDestroy {
+  private readonly theme = inject(ThemeService);
   labels = input.required<string[]>();
   values = input.required<number[]>();
   kind = input<'bar' | 'line'>('line');
@@ -29,10 +32,14 @@ export class TrendChartComponent implements OnDestroy {
     effect(() => {
       this.labels();
       this.values();
+      this.theme.theme();
       if (this.mounted) this.draw();
     });
   }
   draw() {
+    const dark = this.theme.theme() === 'dark';
+    const foreground = dark ? '#b9cec0' : '#697c77';
+    const positive = dark ? '#80d2b1' : '#146b59';
     this.chart?.destroy();
     this.chart = new Chart(this.canvas().nativeElement, {
       type: this.kind(),
@@ -44,11 +51,11 @@ export class TrendChartComponent implements OnDestroy {
             data: this.values().map((n) => n / 100),
             borderColor:
               this.kind() === 'line'
-                ? '#146b59'
-                : this.values().map((n) => (n < 0 ? '#c35258' : '#146b59')),
+                ? positive
+                : this.values().map((n) => (n < 0 ? '#e5838b' : positive)),
             backgroundColor:
               this.kind() === 'line'
-                ? 'rgba(20,107,89,.09)'
+                ? (dark ? 'rgba(128,210,177,.12)' : 'rgba(20,107,89,.09)')
                 : this.values().map((n) => (n < 0 ? '#d96b70' : '#288773')),
             borderWidth: 2,
             fill: this.kind() === 'line',
@@ -73,14 +80,16 @@ export class TrendChartComponent implements OnDestroy {
         },
         scales: {
           x: {
-            title: { display: true, text: this.kind() === 'bar' ? 'Month' : 'Date' },
+            title: { display: true, text: this.kind() === 'bar' ? 'Month' : 'Date', color: foreground },
             grid: { display: false },
-            ticks: { maxTicksLimit: 8 },
+            ticks: { maxTicksLimit: 8, color: foreground },
           },
           y: {
-            title: { display: true, text: 'P&L (₹)' },
+            title: { display: true, text: 'P&L (₹)', color: foreground },
+            grid: { color: dark ? '#344b40' : '#e0e8e4' },
             beginAtZero: true,
             ticks: {
+              color: foreground,
               callback: (value) =>
                 '₹' + new Intl.NumberFormat('en-IN', { notation: 'compact' }).format(Number(value)),
             },

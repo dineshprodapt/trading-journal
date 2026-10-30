@@ -1,11 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, friendlyError } from '../core/auth.service';
+import { ThemeToggleComponent } from '../shared/theme-toggle.component';
 @Component({
   selector: 'app-login',
-  imports: [RouterLink],
+  imports: [RouterLink, ThemeToggleComponent],
   styleUrl: './login.component.scss',
   template: ` <main class="login-wrap">
+    <app-theme-toggle class="login-theme-toggle" />
     <section class="login-story">
       <div class="login-avatar-frame rounded-circle">
         <!-- Previous photo backup: <img class="login-avatar" src="assets/images/dinesh.JPEG?v=2" alt="Dinesh" /> -->

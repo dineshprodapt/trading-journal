@@ -1,0 +1,23 @@
+:host { display: block; }
+.rules-scope { color: #d4ad16; }
+.rules-hero { padding: clamp(24px, 4vw, 48px); border-radius: 20px; background: radial-gradient(ellipse at top right, #41634a, transparent 65%), #143c31; color: #fff; box-shadow: 0 12px 32px #143c3114; }
+.rules-kicker { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; font-size: .68rem; font-weight: 700; letter-spacing: 2px; color: #d3e6bf; }
+.rules-kicker span { border: 1px solid #789a79; border-radius: 30px; padding: 6px 12px; font-size: .6rem; }
+h1 { margin: 22px 0 10px; font-size: clamp(2rem, 4vw, 3.4rem); }
+.rules-hero p { color: #e0ebdf; font-weight: 700; font-size: .9rem; }
+.rules-mantra { display: flex; gap: 12px; align-items: center; margin-top: 28px; padding: 16px 20px; border-radius: 10px; color: #255600; background: #e6f1bd; font-size: .85rem; line-height: 1.7; }
+.rules-mantra > span { font-size: 1.6rem; }
+.rules-intro { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; margin: 32px 0 18px; }
+.rules-intro h2 { margin: 0; }
+.rules-intro > span { font-size: .78rem; color: #697c77; }
+.rules-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; list-style: none; padding: 0; }
+.rule-card { background: #fff; border: 1px solid #dce6df; border-radius: 14px; padding: 24px; box-shadow: 0 4px 16px #143c3105; }
+.rule-card-heading { display: flex; gap: 12px; align-items: center; margin-bottom: 18px; }
+.rule-number { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; background: #edf3e6; color: #386345; border-radius: 10px; font-size: .75rem; font-weight: 800; }
+h3 { font-size: .95rem; font-weight: 700; line-height: 1.4; margin: 0; }
+.rule-card p, .rule-limits { margin: 0; font-size: .9rem; line-height: 1.85; color: var(--rule-body-color, #3d514b); }
+.rule-card-risk { grid-column: span 2; border-color: #d9c665; background: #fffef5; }
+.rule-card-risk .rule-number { background: #f4e9a9; color: #655412; }
+.rule-limits { list-style: none; padding: 0; margin-top: 12px; display: grid; gap: 8px; }
+@media (max-width: 1200px) { .rules-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .rules-grid { grid-template-columns: 1fr; } .rule-card-risk { grid-column: auto; } .rule-card { padding: 20px; } }

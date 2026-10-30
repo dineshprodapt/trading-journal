@@ -8,27 +8,28 @@
       <button
         type="button"
         (click)="scrollToSection('overview')"
-        [class.active]="activeSection() === 'overview'"
-        [attr.aria-current]="activeSection() === 'overview' ? 'location' : null"
+        [class.active]="!isRulesPage && activeSection() === 'overview'"
+        [attr.aria-current]="!isRulesPage && activeSection() === 'overview' ? 'location' : null"
       >
         ◫ <span>Overview</span>
       </button>
       <button
         type="button"
         (click)="scrollToSection('daily')"
-        [class.active]="activeSection() === 'daily'"
-        [attr.aria-current]="activeSection() === 'daily' ? 'location' : null"
+        [class.active]="!isRulesPage && activeSection() === 'daily'"
+        [attr.aria-current]="!isRulesPage && activeSection() === 'daily' ? 'location' : null"
       >
         ▤ <span>Daily journal</span>
       </button>
       <button
         type="button"
         (click)="scrollToSection('monthly')"
-        [class.active]="activeSection() === 'monthly'"
-        [attr.aria-current]="activeSection() === 'monthly' ? 'location' : null"
+        [class.active]="!isRulesPage && activeSection() === 'monthly'"
+        [attr.aria-current]="!isRulesPage && activeSection() === 'monthly' ? 'location' : null"
       >
         ▥ <span>Monthly summary</span>
       </button>
+      <a routerLink="/journal/rules" [class.active]="isRulesPage" [attr.aria-current]="isRulesPage ? 'page' : null">✦ <span>My Trading Rules</span></a>
     </nav>
     <div class="sidebar-foot">
       <span class="status-dot"></span>{{ auth.demo ? 'Local demo' : 'Private journal' }}
@@ -50,6 +51,7 @@
             Sign out
           </button>
         }
+        <app-theme-toggle />
       </div>
       <div class="quote-strip" role="region" aria-label="Daily inspiration">
         <span class="quote-label"><span aria-hidden="true">✦</span> MINDSET</span>
@@ -58,8 +60,8 @@
           <div class="quote-track" aria-hidden="true">
             @for (copy of [0, 1]; track copy) {
               <div class="quote-group">
-                @for (quote of quotes; track quote) {
-                  <span class="quote-item">{{ quote }}<span class="quote-separator">✦</span></span>
+                @for (quote of quotes; track quote; let quoteIndex = $index) {
+                  <span class="quote-item" [attr.data-quote-color]="quoteIndex">{{ quote }}<span class="quote-separator">✦</span></span>
                 }
               </div>
             }
@@ -77,6 +79,10 @@
       </div>
     </header>
     <main id="overview" tabindex="-1" class="main-content">
+      <nav class="mobile-page-nav" aria-label="Page navigation"><a routerLink="/journal">Journal</a><a routerLink="/journal/rules" [attr.aria-current]="isRulesPage ? 'page' : null">My Trading Rules</a></nav>
+      @if (isRulesPage) {
+        <app-trading-rules />
+      } @else {
       @if (auth.demo) {
         <div class="demo-banner">
           <div>
@@ -124,7 +130,7 @@
       <div class="section-toolbar">
         <div>
           <span class="section-title">Performance overview</span
-          ><span class="small text-secondary ms-3">{{ metrics().days }} recorded days</span>
+          ><span class="small text-secondary ms-3">{{ metrics().days }} trading days</span>
         </div>
         <label class="period-picker"
           >Period
@@ -143,14 +149,14 @@
       </div>
       <div class="row g-3 mb-4">
         <div class="col-12 col-sm-6 col-xl-3">
-          <section class="metric-card featured">
+          <section class="metric-card featured palette-graphite">
             <p>NET PROFIT / LOSS</p>
             <h2 [class.negative]="metrics().pnl < 0">{{ money(metrics().pnl) }}</h2>
             <small>After trading charges</small>
           </section>
         </div>
         <div class="col-12 col-sm-6 col-xl-3">
-          <section class="metric-card">
+          <section class="metric-card palette-charcoal">
             <p>TOTAL TRADES</p>
             <h2>{{ metrics().trades | number }}</h2>
             <small>{{
@@ -161,7 +167,7 @@
           </section>
         </div>
         <div class="col-12 col-sm-6 col-xl-3">
-          <section class="metric-card">
+          <section class="metric-card palette-teal">
             <p>DAY WIN RATE</p>
             <h2>
               {{ metrics().winRate === null ? '—' : (metrics().winRate | number: '1.1-1') + '%' }}
@@ -173,7 +179,7 @@
           </section>
         </div>
         <div class="col-12 col-sm-6 col-xl-3">
-          <section class="metric-card">
+          <section class="metric-card palette-olive">
             <p>WIN / LOSS DAY RATIO</p>
             <h2 class="ratio-value">{{ metrics().ratio }}</h2>
             <small>Flat days excluded</small>
@@ -182,7 +188,7 @@
       </div>
       <div class="row g-4 mb-4">
         <div class="col-lg-6">
-          <section class="panel">
+          <section class="panel overview-chart-panel">
             <div class="panel-heading">
               <div>
                 <h2>Monthly results</h2>
@@ -199,7 +205,7 @@
           </section>
         </div>
         <div class="col-lg-6">
-          <section class="panel">
+          <section class="panel overview-chart-panel">
             <div class="panel-heading">
               <div>
                 <h2>The bigger picture</h2>
@@ -563,6 +569,7 @@
         </p>
       </section>
       <footer>TRADING JOURNAL <span>Built for reflection, one day at a time.</span></footer>
+      }
     </main>
   </div>
 </div>
