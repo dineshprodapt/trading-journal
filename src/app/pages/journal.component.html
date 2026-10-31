@@ -15,7 +15,7 @@
   [class.journal-intro-reveal]="celebrationStarted && !celebrating()" [attr.inert]="celebrating() ? '' : null">
   <aside class="sidebar">
     <a class="brand" href="#" (click)="$event.preventDefault(); scrollToSection('overview')"
-      ><span class="brand-mark">DK</span><span>Trading<br /><strong>Journal</strong></span></a
+      ><img class="brand-mark" src="assets/images/dinesh2.jpg?v=1" alt="Dinesh" width="42" height="42" /><span>Trading<br /><strong>Journal</strong></span></a
     >
     <p class="eyebrow nav-caption">WORKSPACE</p>
     <nav aria-label="Main navigation">
@@ -53,7 +53,7 @@
   <div class="workspace">
     <header class="topbar">
       <div class="header-account">
-        <span class="avatar" aria-hidden="true">DK</span>
+        <img class="avatar" src="assets/images/dinesh2.jpg?v=1" alt="" width="40" height="40" />
         <div class="header-greeting">
           <span class="header-eyebrow">Welcome</span>
           <span class="user-label" [title]="displayName()"
