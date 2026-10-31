@@ -41,9 +41,9 @@
       <div class="header-account">
         <span class="avatar" aria-hidden="true">DK</span>
         <div class="header-greeting">
-          <span class="header-eyebrow">YOUR DAILY PERSPECTIVE</span>
-          <span class="user-label" [title]="'' + displayName()"
-            >Welcome, {{ displayName() }}</span
+          <span class="header-eyebrow">Welcome</span>
+          <span class="user-label" [title]="displayName()"
+            >{{ displayName() }}</span
           >
         </div>
         @if (!auth.demo) {

@@ -214,18 +214,23 @@ app-trading-rules .rule-card .rule-green { color: #357000; }
 .header-eyebrow {
   display: block;
   color: #6d8065;
-  font-size: 0.59rem;
+  font-size: 1rem;
   font-weight: 700;
-  letter-spacing: 1.6px;
+  letter-spacing: 0.2px;
   margin-bottom: 4px;
 }
 .user-label {
   display: block;
-  font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+  font-size: calc(1rem + 2px);
   font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  animation: name-blink 2s ease-in-out infinite;
+}
+@keyframes name-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
 }
 .signout-button {
   flex: 0 0 auto;
@@ -319,6 +324,9 @@ app-trading-rules .rule-card .rule-green { color: #357000; }
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .user-label {
+    animation: none;
+  }
   .quote-track {
     animation: none;
   }
@@ -689,8 +697,15 @@ footer span {
     padding-bottom: 14px;
   }
   .header-eyebrow {
-    font-size: 0.5rem;
-    letter-spacing: 0.8px;
+    font-size: 0.95rem;
+  }
+  .user-label {
+    font-size: calc(0.95rem + 2px);
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+    line-height: 1.4;
   }
   .quote-strip {
     gap: 8px;
