@@ -1,4 +1,18 @@
-<div class="app-shell">
+@if (celebrating()) {
+  <div class="login-celebration" role="status" aria-label="Welcome! Opening your journal.">
+    <div class="celebration-message">✦<span>Welcome</span><strong class="celebration-name">{{ displayName() }}</strong><small>A bright new trading day awaits</small></div>
+    @for (burst of fireworks; track $index) {
+      <div class="celebration-burst" aria-hidden="true" [style.left.%]="burst.x" [style.top.%]="burst.y"
+        [style.--burst-delay]="burst.delay + 'ms'" [style.color]="burst.color">
+        @for (angle of sparks; track angle) {
+          <i [style.--spark-angle]="angle + 'deg'"></i>
+        }
+      </div>
+    }
+  </div>
+}
+<div class="app-shell" [class.journal-intro-hidden]="celebrating()"
+  [class.journal-intro-reveal]="celebrationStarted && !celebrating()" [attr.inert]="celebrating() ? '' : null">
   <aside class="sidebar">
     <a class="brand" href="#" (click)="$event.preventDefault(); scrollToSection('overview')"
       ><span class="brand-mark">DK</span><span>Trading<br /><strong>Journal</strong></span></a

@@ -22,6 +22,12 @@ export class AuthService {
   private router = inject(Router);
   private readonly theme = inject(ThemeService);
   private signingIn = false;
+  private loginCelebrationPending = false;
+  consumeLoginCelebration(): boolean {
+    const pending = this.loginCelebrationPending;
+    this.loginCelebrationPending = false;
+    return pending;
+  }
   readonly demo = environment.demo;
   readonly user = signal<User | null>(null);
   readonly error = signal('');
@@ -95,7 +101,9 @@ export class AuthService {
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
       const result = await signInWithPopup(auth, provider);
-      return await this.acceptUser(result.user);
+      const accepted = await this.acceptUser(result.user);
+      this.loginCelebrationPending = accepted;
+      return accepted;
     } finally {
       this.signingIn = false;
     }

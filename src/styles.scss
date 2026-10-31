@@ -12,6 +12,58 @@
 body {
   margin: 0;
 }
+.login-celebration {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(ellipse at center, #302044, #101322 75%);
+  color: #ffd166;
+  animation: celebration-enter 250ms ease-out both;
+}
+.celebration-message {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 24px;
+  font-size: 2rem;
+  span { display: block; color: #fff5df; font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 700; }
+  small { display: block; color: #e3d9ed; font-size: 0.95rem; margin-top: 10px; }
+}
+.celebration-name {
+  display: block;
+  font-size: clamp(1.4rem, 5vw, 2.5rem);
+  overflow-wrap: anywhere;
+}
+.celebration-burst {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  i {
+    position: absolute;
+    width: 4px;
+    height: 14px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 12px currentColor;
+    opacity: 0;
+    animation: celebration-spark 1.4s ease-out var(--burst-delay) infinite both;
+  }
+}
+@keyframes celebration-spark {
+  0% { opacity: 0; transform: rotate(var(--spark-angle)) translateY(0) scale(0.3); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(var(--spark-angle)) translateY(clamp(65px, 18vw, 180px)) scale(0.3); }
+}
+@keyframes celebration-enter { from { opacity: 0; } to { opacity: 1; } }
+.journal-intro-hidden { visibility: hidden; }
+.journal-intro-reveal { animation: celebration-enter 350ms ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .login-celebration, .journal-intro-reveal { animation: none; }
+  .celebration-burst { display: none; }
+}
 button,
 a,
 input,
