@@ -85,6 +85,17 @@
                 }
               ]
             },
+            "e2e": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.e2e.ts"
+                }
+              ]
+            },
             "github-pages": {
               "baseHref": "/trading-journal/",
               "fileReplacements": [
@@ -105,6 +116,9 @@
             },
             "development": {
               "buildTarget": "trading-journal:build:development"
+            },
+            "e2e": {
+              "buildTarget": "trading-journal:build:e2e"
             }
           },
           "defaultConfiguration": "development"

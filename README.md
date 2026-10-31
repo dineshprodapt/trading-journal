@@ -76,7 +76,7 @@ Production builds use `src/environments/environment.ts`, where demo is already *
 | Cumulative P&L (₹)      | Sum in chronological date order across all saved records.                                      |
 | Trade count (extension) | Optional whole number; added because the workbook has no structured trade count.               |
 
-The date selector permits 1900–2099; the default month list includes **October 2026 through October 2027** and expands for other saved dates. No records are created for unrecorded dates. No trading-day/holiday calendar is assumed.
+The date selector permits 1900–2099; the default month list includes **October 2026 through October 2037** and expands for other saved dates. The monthly summary table has calendar-year pagination (partial 2026 and 2037 pages), with cumulative totals continuing across pages. Pagination does not change the overview, period filter, daily journal, or exports. No records are created for unrecorded dates. No trading-day/holiday calendar is assumed.
 
 Starting capital is **not carried forward**. Ending capital adds all-time cumulative P&L to the starting capital entered for each date. Monetary values are stored as integer **paise** to avoid floating-point accumulation errors. Both UI and service validation reject more than two decimal places. Capital is limited to ₹10 billion; P&L to ±₹10 billion per day. Trade count is 0–100,000.
 

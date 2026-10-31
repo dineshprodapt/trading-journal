@@ -57,6 +57,9 @@ a {
   padding: 0.65rem 0.8rem;
   font-size: 0.85rem;
 }
+.form-select {
+  padding-right: 2.25rem;
+}
 .form-control:focus,
 .form-select:focus {
   border-color: #5d9e88;
@@ -536,6 +539,29 @@ app-trading-rules .rule-card .rule-green { color: #357000; }
 .highlights span {
   font-size: 0.75rem;
   color: var(--muted);
+}
+.highlights .best-pnl {
+  color: var(--green);
+  font-weight: 700;
+}
+.summary-year-select {
+  min-width: 5rem;
+}
+#monthly .highlights small,
+#monthly .table thead th {
+  color: #596579;
+}
+#monthly .highlights,
+#monthly .table thead th {
+  background-color: #eef1f6;
+}
+html[data-bs-theme='dark'] #monthly .highlights,
+html[data-bs-theme='dark'] #monthly .table thead th {
+  background-color: #283141;
+}
+html[data-bs-theme='dark'] #monthly .highlights small,
+html[data-bs-theme='dark'] #monthly .table thead th {
+  color: #bbc5d4;
 }
 .empty-state {
   text-align: center;

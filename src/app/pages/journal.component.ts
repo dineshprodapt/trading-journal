@@ -56,6 +56,7 @@ export class JournalComponent {
   money = money;
   monthLabel = monthLabel;
   month = signal('');
+  summaryYear = signal(today().slice(0, 4));
   search = signal('');
   status = signal('');
   page = signal(1);
@@ -90,7 +91,8 @@ export class JournalComponent {
   months = computed(() =>
     [
       ...new Set([
-        ...Array.from({ length: 13 }, (_, i) => {
+        // October 2026 through October 2037, inclusive.
+        ...Array.from({ length: (2037 - 2026) * 12 + 1 }, (_, i) => {
           const d = new Date(2026, 9 + i, 1);
           return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
         }),
@@ -103,6 +105,18 @@ export class JournalComponent {
   monthly = computed(() =>
     monthlyRows(this.period(), this.month() ? [this.month()] : this.months()),
   );
+  summaryYears = computed(() => [...new Set(this.monthly().map((m) => m.month.slice(0, 4)))]);
+  currentSummaryYear = computed(() =>
+    this.summaryYears().includes(this.summaryYear()) ? this.summaryYear() : this.summaryYears()[0],
+  );
+  summaryYearIndex = computed(() => this.summaryYears().indexOf(this.currentSummaryYear()));
+  visibleMonths = computed(() =>
+    this.monthly().filter((m) => m.month.startsWith(this.currentSummaryYear() + '-')),
+  );
+  changeSummaryYear(offset: number) {
+    const year = this.summaryYears()[this.summaryYearIndex() + offset];
+    if (year) this.summaryYear.set(year);
+  }
   activeMonths = computed(() => this.monthly().filter((m) => m.days > 0));
   bestMonth = computed(() => [...this.activeMonths()].sort((a, b) => b.pnl - a.pnl)[0]);
   worstMonth = computed(() => worstLoss(this.activeMonths()));
@@ -175,6 +189,7 @@ export class JournalComponent {
   }
   changeMonth(value: string) {
     this.month.set(value);
+    if (value) this.summaryYear.set(value.slice(0, 4));
     this.page.set(1);
   }
   order(key: keyof DailyRow) {

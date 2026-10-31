@@ -42,7 +42,7 @@
         <span class="avatar" aria-hidden="true">DK</span>
         <div class="header-greeting">
           <span class="header-eyebrow">YOUR DAILY PERSPECTIVE</span>
-          <span class="user-label" [title]="'Welcome, ' + displayName()"
+          <span class="user-label" [title]="'' + displayName()"
             >Welcome, {{ displayName() }}</span
           >
         </div>
@@ -129,7 +129,7 @@
       }
       <div class="section-toolbar">
         <div>
-          <span class="section-title">Performance overview</span
+          <span class="section-title">Performance Overview</span
           ><span class="small text-secondary ms-3">{{ metrics().days }} trading days</span>
         </div>
         <label class="period-picker"
@@ -515,7 +515,7 @@
           <div class="col-6 col-lg-3">
             <small>BEST MONTH</small
             ><strong>{{ bestMonth() ? monthLabel(bestMonth()!.month) : '—' }}</strong
-            ><span>{{ money(bestMonth()?.pnl ?? null) }}</span>
+            ><span class="best-pnl">{{ money(bestMonth()?.pnl ?? null) }}</span>
           </div>
           <div class="col-6 col-lg-3">
             <small>WORST MONTH</small
@@ -523,7 +523,7 @@
             ><span>{{ worstMonth() ? money(worstMonth()!.pnl) : '-' }}</span>
           </div>
           <div class="col-6 col-lg-3">
-            <small>BEST DAILY P&L</small><strong>{{ money(bestDay()) }}</strong>
+            <small>BEST DAILY P&L</small><strong class="best-pnl">{{ money(bestDay()) }}</strong>
           </div>
           <div class="col-6 col-lg-3">
             <small>WORST DAILY P&L</small
@@ -545,7 +545,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (m of monthly(); track m.month) {
+              @for (m of visibleMonths(); track m.month) {
                 <tr>
                   <td>{{ monthLabel(m.month) }}</td>
                   <td>{{ m.days }}</td>
@@ -562,10 +562,29 @@
             </tbody>
           </table>
         </div>
+        <nav class="d-flex flex-wrap align-items-center justify-content-between gap-3 my-3" aria-label="Monthly summary pagination">
+          <label class="d-flex align-items-center gap-2">
+            Year
+            <select class="form-select form-select-sm summary-year-select" aria-label="Monthly summary year"
+              [ngModel]="currentSummaryYear()" (ngModelChange)="summaryYear.set($event)">
+              @for (year of summaryYears(); track year) {
+                <option [value]="year">{{ year }}</option>
+              }
+            </select>
+          </label>
+          <span class="small text-secondary" aria-live="polite">Year {{ summaryYearIndex() + 1 }} of {{ summaryYears().length }}</span>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary"
+              [disabled]="summaryYearIndex() === 0" (click)="changeSummaryYear(-1)">Previous year</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary"
+              [disabled]="summaryYearIndex() === summaryYears().length - 1" (click)="changeSummaryYear(1)">Next year</button>
+          </div>
+        </nav>
         <p class="small text-secondary mb-0">
           Flat days count in trading days and average P&amp;L; they are excluded from win rate.
           Empty months are excluded from best / worst. Worst values show only losses; a hyphen means
-          no loss in the selected period. Monthly cumulative totals start at the selected period.
+          no loss in the selected period. Monthly cumulative totals start at the selected period
+          and continue across year pages. Year pagination changes only this table.
         </p>
       </section>
       <footer>TRADING JOURNAL <span>Built for reflection, one day at a time.</span></footer>

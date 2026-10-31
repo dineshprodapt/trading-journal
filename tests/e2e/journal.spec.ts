@@ -5,7 +5,7 @@ test('demo CRUD, duplicate prevention, metrics, filter, export and responsive la
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/journal');
-  await expect(page.getByRole('heading', { name: 'Your trading, in perspective.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Dinesh Trading Journal' })).toBeVisible();
   await page.getByRole('button', { name: 'Load sample data' }).click();
   await expect(page.locator('.metric-card').first()).toContainText('₹5,900.00');
   await page.getByRole('button', { name: 'New daily entry' }).click();
