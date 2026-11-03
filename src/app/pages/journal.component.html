@@ -203,19 +203,37 @@
           </section>
         </div>
       </div>
-      <div class="row g-4 mb-4">
+      <div class="row g-4 mb-4 overview-charts">
         <div class="col-lg-6">
           <section class="panel overview-chart-panel">
             <div class="panel-heading">
               <div>
                 <h2>Monthly results</h2>
-                <p>Net P&L for each month · ₹</p>
+                <p>Net P&amp;L for each month</p><p data-testid="monthly-chart-total" aria-live="polite">Period net P&amp;L: <strong>{{ journal.loading() ? 'Loading...' : chartMonthlyTotal() === null ? 'No data' : money(chartMonthlyTotal()) }}</strong></p>
               </div>
               <span class="chart-key">● Profit <span class="negative ms-2">● Loss</span></span>
             </div>
+            <div class="chart-controls">
+              <div>
+                <label class="form-label small" for="chart-range">Chart period</label>
+                <select id="chart-range" class="form-select form-select-sm" [ngModel]="chartRange()" (ngModelChange)="chartRange.set($event)">
+                  <option value="latest">Oct 2026 &ndash; Oct 2027</option>
+                  <option value="year">Choose year</option>
+                </select>
+              </div>
+              @if (chartRange() === 'year') {
+                <div>
+                  <label class="form-label small" for="chart-year">Chart year</label>
+                  <select id="chart-year" class="form-select form-select-sm" [ngModel]="chartYear()" (ngModelChange)="chartYear.set($event)">
+                    @for (year of chartYears(); track year) { <option [value]="year">{{ year }}</option> }
+                  </select>
+                </div>
+              }
+            </div>
+            <p class="small text-secondary" aria-live="polite" data-testid="chart-period">{{ chartRangeLabel() }} · Chart period is independent of the dashboard month filter.</p>
             <app-trend-chart
               kind="bar"
-              title="Monthly net P&L"
+              [title]="'Monthly net P&L: ' + chartRangeLabel()"
               [labels]="chartMonths()"
               [values]="chartMonthlyValues()"
             />
@@ -226,7 +244,7 @@
             <div class="panel-heading">
               <div>
                 <h2>The bigger picture</h2>
-                <p>All-time cumulative P&L at each selected date · ₹</p>
+                <p>All-time cumulative P&amp;L at each selected date</p><p data-testid="cumulative-chart-total" aria-live="polite">Latest plotted total: <strong>{{ journal.loading() ? 'Loading...' : chartCumulativeTotal() === null ? 'No data' : money(chartCumulativeTotal()) }}</strong></p>
               </div>
               <span class="tag">RUNNING TOTAL</span>
             </div>

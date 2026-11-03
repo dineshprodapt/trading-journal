@@ -169,8 +169,26 @@ export class JournalComponent {
       this.currentPage() * this.pageSize(),
     ),
   );
-  chartMonths = computed(() => this.monthly().map((m) => monthLabel(m.month)));
-  chartMonthlyValues = computed(() => this.monthly().map((m) => m.pnl));
+  chartRange = signal('latest');
+  chartYear = signal(today().slice(0, 4));
+  chartYears = computed(() => [...new Set([today().slice(0, 4), ...this.months().map(m => m.slice(0, 4))])].filter(year => year >= '2026').sort().reverse());
+  chartMonthlyRows = computed(() => {
+    const end = this.chartRange() === 'year' ? this.chartYear() + '-12'
+      : '2027-10';
+    const [year, month] = end.split('-').map(Number);
+    const count = this.chartRange() === 'latest' ? 13 : 12;
+    const keys = Array.from({ length: count }, (_, index) => {
+      const date = new Date(year, month - count + index, 1);
+      return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+    }).filter(key => key >= '2026-10');
+    return monthlyRows(this.all(), keys);
+  });
+  chartMonths = computed(() => this.chartMonthlyRows().map(m => monthLabel(m.month)));
+  chartMonthlyValues = computed(() => this.chartMonthlyRows().map(m => m.pnl));
+  chartRangeLabel = computed(() => this.chartMonths()[0] + ' – ' + this.chartMonths().at(-1));
+  chartMonthlyTotal = computed(() => this.chartMonthlyRows().some(row => row.days > 0)
+    ? this.chartMonthlyValues().reduce((sum, value) => sum + value, 0) : null);
+  chartCumulativeTotal = computed(() => this.chartCumulative().at(-1) ?? null);
   chartDates = computed(() => this.period().map((e) => e.date));
   chartCumulative = computed(() => this.period().map((e) => e.cumulative));
   constructor() {

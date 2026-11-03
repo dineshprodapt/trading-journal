@@ -504,6 +504,13 @@ app-trading-rules .rule-card .rule-green { color: #357000; }
   position: relative;
   height: 245px;
 }
+.overview-charts > .col-lg-6 { display: flex; min-width: 0; }
+.overview-chart-panel { display: flex; flex-direction: column; width: 100%; min-width: 0; }
+.overview-chart-panel app-trend-chart { display: block; margin-top: auto; }
+.chart-controls { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; margin-bottom: 12px; }
+.chart-controls > div { display: flex; align-items: center; gap: 10px; max-width: 100%; }
+.chart-controls label { margin: 0; white-space: nowrap; }
+.chart-controls select, .chart-controls input { width: auto; min-width: 0; max-width: 100%; }
 .chart-key {
   font-size: 0.65rem;
   color: #288773;
