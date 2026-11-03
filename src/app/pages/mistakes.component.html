@@ -1,0 +1,34 @@
+<section class="mistakes-hero" aria-labelledby="mistakes-title">
+  <span class="eyebrow">REFLECT · REFINE · IMPROVE</span>
+  <h1 id="mistakes-title">Mistakes</h1>
+  <p>Spot the patterns. Break the cycle.</p>
+  <label for="mistakes-month">Review month</label>
+  <select id="mistakes-month" class="form-select" [ngModel]="month()" (ngModelChange)="month.set($event)">
+    @for (value of months(); track value) { <option [value]="value">{{ monthLabel(value) }}</option> }
+  </select>
+</section>
+<section aria-live="polite" aria-atomic="true">
+  <div class="review-heading"><h2>{{ monthLabel(month()) }}</h2><span>{{ mistakes().length }} recurring patterns · {{ notes().length }} daily notes</span></div>
+  <p class="method-note">Patterns mentioned on at least two separate dates in Trades / Notes. Local phrase analysis groups common trading mistakes; it may miss nuanced wording. Counts represent journal days, not individual trades.</p>
+  @if (journal.loading()) {
+    <div class="empty-review" role="status">Reading your trade notes…</div>
+  } @else if (journal.error()) {
+    <div class="alert alert-danger" role="alert">{{ journal.error() }}</div>
+  } @else {
+    @if (journal.cached()) { <p class="method-note">Showing cached notes. Results update when your journal syncs.</p> }
+    <div class="mistakes-grid">
+      @for (mistake of mistakes(); track mistake.title; let index = $index) {
+        <article class="mistake-card">
+          <div class="card-top"><span class="pattern-number">{{ (index + 1).toString().padStart(2, '0') }}</span><span class="frequency">{{ mistake.evidence.length }} journal days</span></div>
+          <h3>{{ mistake.title }}</h3>
+          <ul><li>{{ mistake.action }}</li></ul>
+          <details><summary>View supporting notes · {{ mistake.evidence.length }}</summary>
+            @for (item of mistake.evidence; track item.date) { <blockquote><time [attr.datetime]="item.date">{{ item.date }}</time><p>{{ item.notes }}</p></blockquote> }
+          </details>
+        </article>
+      } @empty {
+        <div class="empty-review"><span aria-hidden="true">◎</span><h3>{{ notes().length ? 'No repeated patterns detected' : 'No trade notes this month' }}</h3><p>{{ notes().length ? 'No supported mistake pattern appears on two separate dates. This does not mean your notes contain no mistakes.' : 'Add Trades / Notes to your daily journal, or choose another month to review.' }}</p></div>
+      }
+    </div>
+  }
+</section>

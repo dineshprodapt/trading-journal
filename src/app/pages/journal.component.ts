@@ -2,6 +2,7 @@ import { Component, DestroyRef, afterNextRender, computed, effect, inject, signa
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { MistakesComponent } from './mistakes.component';
 import { TradingRulesComponent } from './trading-rules.component';
 import { ThemeToggleComponent } from '../shared/theme-toggle.component';
 import { AuthService, friendlyError } from '../core/auth.service';
@@ -22,14 +23,16 @@ import { ExportService } from '../core/export.service';
 import { TrendChartComponent } from '../shared/trend-chart.component';
 @Component({
   selector: 'app-journal',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, TrendChartComponent, RouterLink, TradingRulesComponent, ThemeToggleComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TrendChartComponent, RouterLink, MistakesComponent, TradingRulesComponent, ThemeToggleComponent],
   templateUrl: './journal.component.html',
 })
 export class JournalComponent {
   private readonly route = inject(ActivatedRoute);
   readonly isRulesPage = this.route.snapshot.data['tradingRules'] === true;
+  readonly isMistakesPage = this.route.snapshot.data['mistakes'] === true;
+  readonly isDetailPage = this.isRulesPage || this.isMistakesPage;
   auth = inject(AuthService);
-  readonly celebrating = signal(!this.isRulesPage && this.auth.consumeLoginCelebration());
+  readonly celebrating = signal(!this.isDetailPage && this.auth.consumeLoginCelebration());
   readonly celebrationStarted = this.celebrating();
   readonly sparks = Array.from({ length: 16 }, (_, i) => i * 22.5);
   readonly fireworks = [
@@ -178,7 +181,7 @@ export class JournalComponent {
     });
     afterNextRender(() => {
       const section = this.route.snapshot.fragment;
-      if (!this.isRulesPage && (section === 'overview' || section === 'daily' || section === 'monthly')) {
+      if (!this.isDetailPage && (section === 'overview' || section === 'daily' || section === 'monthly')) {
         this.scrollToSection(section);
       }
     });
@@ -187,7 +190,7 @@ export class JournalComponent {
     });
   }
   scrollToSection(section: 'overview' | 'daily' | 'monthly') {
-    if (this.isRulesPage) {
+    if (this.isDetailPage) {
       void this.router.navigate(['/journal'], { fragment: section });
       return;
     }

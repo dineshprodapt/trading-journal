@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth.guard';
 export const routes: Routes = [
+  { path: 'journal/mistakes', canActivate: [authGuard], data: { mistakes: true }, loadComponent: () => import('./pages/journal.component').then(m => m.JournalComponent) },
   {
     path: 'journal/rules',
     canActivate: [authGuard],
