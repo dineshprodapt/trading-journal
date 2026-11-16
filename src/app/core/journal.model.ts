@@ -15,6 +15,7 @@ export interface DailyRow extends Entry {
   cumulative: number;
 }
 export interface MonthRow {
+  profitPercent: number | null;
   month: string;
   days: number;
   wins: number;
@@ -25,16 +26,16 @@ export interface MonthRow {
   winRate: number | null;
   cumulative: number;
 }
+// Intl formatters are expensive to construct; reuse them across rows and renders.
+const currencyFormatter = new Intl.NumberFormat('en-IN', {
+  style: 'currency', currency: 'INR', maximumFractionDigits: 2,
+});
+const monthFormatter = new Intl.DateTimeFormat('en-IN', { month: 'short', year: 'numeric' });
+const weekdayFormatter = new Intl.DateTimeFormat('en-IN', { weekday: 'short' });
 export const money = (paise: number | null): string =>
-  paise === null
-    ? '—'
-    : new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 2,
-      }).format(paise / 100);
+  paise === null ? '—' : currencyFormatter.format(paise / 100);
 export const monthLabel = (month: string): string =>
-  new Date(month + '-01T12:00:00').toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+  monthFormatter.format(new Date(month + '-01T12:00:00'));
 export function today(): string {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Kolkata',
@@ -84,7 +85,7 @@ export function dailyRows(entries: Entry[]): DailyRow[] {
       cumulative += e.pnl;
       return {
         ...e,
-        day: new Date(e.date + 'T12:00:00').toLocaleDateString('en-IN', { weekday: 'short' }),
+        day: weekdayFormatter.format(new Date(e.date + 'T12:00:00')),
         month: e.date.slice(0, 7),
         endingCapital: e.startingCapital === null ? null : e.startingCapital + cumulative,
         dailyReturn: e.startingCapital ? (e.pnl / e.startingCapital) * 100 : null,
@@ -114,10 +115,15 @@ export function monthlyRows(entries: Entry[], months?: string[]): MonthRow[] {
   const keys = months ?? [...new Set(entries.map((e) => e.date.slice(0, 7)))].sort();
   let cumulative = 0;
   return keys.map((month) => {
-    const s = summary(entries.filter((e) => e.date.startsWith(month)));
+    const monthEntries = entries.filter((e) => e.date.startsWith(month));
+    const s = summary(monthEntries);
+    // Repeated daily capital is the same monthly investment, not additive.
+    const capital = [...monthEntries].sort((a, b) => a.date.localeCompare(b.date))
+      .find(e => e.startingCapital !== null)?.startingCapital;
     cumulative += s.pnl;
     return {
       month,
+      profitPercent: capital && capital > 0 ? s.pnl / capital * 100 : null,
       days: s.days,
       wins: s.wins,
       losses: s.losses,

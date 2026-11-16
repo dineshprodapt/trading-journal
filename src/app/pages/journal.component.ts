@@ -1,4 +1,4 @@
-import { Component, DestroyRef, afterNextRender, computed, effect, inject, signal } from '@angular/core';
+import { Component, afterNextRender, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -32,18 +32,6 @@ export class JournalComponent {
   readonly isMistakesPage = this.route.snapshot.data['mistakes'] === true;
   readonly isDetailPage = this.isRulesPage || this.isMistakesPage;
   auth = inject(AuthService);
-  readonly celebrating = signal(!this.isDetailPage && this.auth.consumeLoginCelebration());
-  readonly celebrationStarted = this.celebrating();
-  readonly sparks = Array.from({ length: 16 }, (_, i) => i * 22.5);
-  readonly fireworks = [
-    { x: 18, y: 25, delay: 0, color: '#ffd166' },
-    { x: 78, y: 20, delay: 180, color: '#ff89c5' },
-    { x: 48, y: 42, delay: 320, color: '#a9a0ff' },
-    { x: 22, y: 75, delay: 500, color: '#67e8d0' },
-    { x: 80, y: 72, delay: 650, color: '#ffb46b' },
-    { x: 55, y: 85, delay: 800, color: '#ffd166' },
-  ];
-  private readonly destroyRef = inject(DestroyRef);
   displayName = computed(() => {
     const user = this.auth.user();
     return (
@@ -193,11 +181,6 @@ export class JournalComponent {
   chartCumulative = computed(() => this.period().map((e) => e.cumulative));
   constructor() {
     afterNextRender(() => {
-      if (!this.celebrating()) return;
-      const timer = setTimeout(() => this.celebrating.set(false), 5000);
-      this.destroyRef.onDestroy(() => clearTimeout(timer));
-    });
-    afterNextRender(() => {
       const section = this.route.snapshot.fragment;
       if (!this.isDetailPage && (section === 'overview' || section === 'daily' || section === 'monthly')) {
         this.scrollToSection(section);
@@ -292,6 +275,14 @@ export class JournalComponent {
         },
         previous?.revision ?? null,
       );
+      if (this.month() && this.month() !== v.date!.slice(0, 7)) {
+        this.changeMonth(v.date!.slice(0, 7));
+      }
+      this.search.set('');
+      this.status.set('');
+      this.sort.set('date');
+      this.descending.set(true);
+      this.page.set(Math.floor(this.sorted().findIndex(e => e.date === v.date) / this.pageSize()) + 1);
       this.showForm.set(false);
       this.notice.set(
         this.auth.demo ? 'Saved on this browser in demo mode.' : 'Entry saved to Firestore.',

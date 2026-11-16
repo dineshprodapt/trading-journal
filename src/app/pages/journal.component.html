@@ -1,18 +1,4 @@
-@if (celebrating()) {
-  <div class="login-celebration" role="status" aria-label="Welcome! Opening your journal.">
-    <div class="celebration-message">✦<span>Welcome</span><strong class="celebration-name">{{ displayName() }}</strong><small>A bright new trading day awaits</small></div>
-    @for (burst of fireworks; track $index) {
-      <div class="celebration-burst" aria-hidden="true" [style.left.%]="burst.x" [style.top.%]="burst.y"
-        [style.--burst-delay]="burst.delay + 'ms'" [style.color]="burst.color">
-        @for (angle of sparks; track angle) {
-          <i [style.--spark-angle]="angle + 'deg'"></i>
-        }
-      </div>
-    }
-  </div>
-}
-<div class="app-shell" [class.journal-intro-hidden]="celebrating()"
-  [class.journal-intro-reveal]="celebrationStarted && !celebrating()" [attr.inert]="celebrating() ? '' : null">
+<div class="app-shell">
   <aside class="sidebar">
     <a class="brand" href="#" (click)="$event.preventDefault(); scrollToSection('overview')"
       ><img class="brand-mark" src="assets/images/dinesh2.jpg?v=1" alt="Dinesh" width="42" height="42" /><span>Trading<br /><strong>Journal</strong></span></a
@@ -135,15 +121,26 @@
       @if (journal.error()) {
         <div class="alert alert-danger" role="alert">{{ journal.error() }}</div>
       }
-      @if (journal.loading()) {
-        <div class="alert alert-info" role="status">Loading your journal…</div>
-      }
-      @if (!auth.demo && journal.cached()) {
+      @if (journal.connectionDelayed()) {
+        <div class="alert alert-warning" role="status" data-testid="connection-delayed">
+          Firestore has not confirmed your entries after 10 seconds. The connection may be slow or
+          unavailable. {{ journal.cached() ? 'Showing previously saved data.' : 'Your entries have not loaded yet.' }}
+          Check your connection, or retry. We will update this page when data arrives.
+          <button class="btn btn-sm btn-outline-secondary ms-2" (click)="journal.retryConnection()">Retry connection</button>
+        </div>
+      } @else if (!auth.demo && journal.cached()) {
         <div class="alert alert-warning" role="status">
           Waiting for server confirmation. Displayed data may be cached; saving requires a
           connection.
         </div>
       }
+      @if (journal.loading()) {
+        @if (!journal.connectionDelayed()) {
+        <div class="alert alert-info" role="status" data-testid="entries-loading">
+          Loading your entries… You can still use the workspace navigation while we connect.
+        </div>
+        }
+      } @else {
       <div class="section-toolbar">
         <div>
           <span class="section-title">Performance Overview</span
@@ -574,6 +571,7 @@
                 <th>Profitable days</th>
                 <th>Loss days</th>
                 <th>Total P&L (₹)</th>
+                <th>Profit %</th>
                 <th>Avg daily P&L (₹)</th>
                 <th>Win rate %</th>
                 <th>Period cumulative P&L (₹)</th>
@@ -589,6 +587,9 @@
                   <td [class.negative]="m.pnl < 0" [class.positive]="m.pnl > 0">
                     {{ m.days ? money(m.pnl) : '—' }}
                   </td>
+                  <td [class.negative]="(m.profitPercent ?? 0) < 0" [class.positive]="(m.profitPercent ?? 0) > 0">
+                    {{ m.profitPercent === null ? '—' : (m.profitPercent | number: '1.2-2') + '%' }}
+                  </td>
                   <td>{{ money(m.average) }}</td>
                   <td>{{ m.winRate === null ? '—' : (m.winRate | number: '1.1-1') + '%' }}</td>
                   <td>{{ m.days ? money(m.cumulative) : '—' }}</td>
@@ -597,6 +598,7 @@
             </tbody>
           </table>
         </div>
+        <p class="small text-secondary">Profit % = monthly net P&amp;L ÷ first recorded starting capital that month × 100. Repeated daily capital is counted once. Missing or zero capital shows —.</p>
         <nav class="d-flex flex-wrap align-items-center justify-content-between gap-3 my-3" aria-label="Monthly summary pagination">
           <label class="d-flex align-items-center gap-2">
             Year
@@ -622,6 +624,7 @@
           and continue across year pages. Year pagination changes only this table.
         </p>
       </section>
+      }
       <footer>TRADING JOURNAL <span>Built for reflection, one day at a time.</span></footer>
       }
     </main>

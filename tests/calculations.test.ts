@@ -74,6 +74,17 @@ test('trade count totals do not infer counts from notes', () => {
   assert.equal(summary([]).winRate, null);
   assert.equal(summary([e('2026-10-01', 0)]).winRate, null);
 });
+
+test('monthly profit percentage uses capital once and isolates months', () => {
+  const rows = monthlyRows([
+    e('2026-10-02', 20000, 100000), e('2026-10-01', -5000, 100000),
+    e('2026-11-01', -10000, 200000), e('2026-12-01', 0, 100000),
+  ], ['2026-10', '2026-11', '2026-12', '2027-01']);
+  assert.deepEqual(rows.map(m => m.profitPercent), [15, -5, 0, null]);
+  assert.equal(monthlyRows([e('2026-10-01', 100, null)])[0].profitPercent, null);
+  assert.equal(monthlyRows([e('2026-10-01', 100, 0)])[0].profitPercent, null);
+  assert.equal(monthlyRows([e('2026-10-02', 10000, 200000), e('2026-10-01', 10000, 100000)])[0].profitPercent, 20);
+});
 test('money converts to paise and invalid amounts/dates/counts are rejected', () => {
   assert.equal(toPaise('0.29'), 29);
   assert.equal(toPaise(null), null);
@@ -119,6 +130,8 @@ test('Excel export produces readable sheets with numeric money and text notes', 
     assert.equal(workbook.getWorksheet('Daily Tracker')!.getCell('E2').value, -250);
     assert.equal(workbook.getWorksheet('Daily Tracker')!.getCell('F2').value, '=NOT_A_FORMULA');
     assert.equal(workbook.getWorksheet('Monthly Summary')!.getCell('E2').value, -250);
+    assert.equal(workbook.getWorksheet('Monthly Summary')!.getCell('F2').value, -0.25);
+    assert.equal(workbook.getWorksheet('Monthly Summary')!.getCell('F2').numFmt, '0.00%');
   } finally {
     URL.createObjectURL = oldCreate;
     Object.assign(globalThis, { document: oldDocument });

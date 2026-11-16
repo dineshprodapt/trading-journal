@@ -3,6 +3,15 @@ import assert from 'node:assert/strict';
 import { repeatedMistakes } from '../src/app/core/mistakes';
 import { Entry } from '../src/app/core/journal.model';
 const entry = (date: string, notes: string): Entry => ({ date, notes, pnl: 100, startingCapital: null, tradeCount: 3, revision: 1 });
+test('November wording is grouped independently from October', () => {
+ const entries = [entry('2026-10-01', 'FOMO.'), entry('2026-10-02', 'FOMO.'),
+  entry('2026-11-01', 'Over trading. Early entry. Booked profit early. Did not set SL.'),
+  entry('2026-11-02', 'Over-traded. Entered early. Early exit. Missed SL.')];
+ const november = repeatedMistakes(entries, '2026-11');
+ assert.deepEqual(november.map(x => x.title).sort(), ['Entering without confirmation', 'Ignoring the stop-loss', 'Overtrading', 'Taking profits too early']);
+ assert.ok(november.every(x => x.evidence.every(e => e.date.startsWith('2026-11'))));
+ assert.deepEqual(repeatedMistakes(entries, '2026-10').map(x => x.title), ['Chasing entries / FOMO']);
+});
 test('groups related wording across dates and isolates months', () => {
  const entries = [entry('2026-11-01', 'Overtraded today.'), entry('2026-11-02', 'Too many trades. FOMO.'), entry('2026-10-01', 'FOMO.')];
  const result = repeatedMistakes(entries, '2026-11');

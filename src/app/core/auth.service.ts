@@ -14,7 +14,7 @@ import {
   browserSessionPersistence,
   onAuthStateChanged,
 } from 'firebase/auth';
-import { Firestore, getFirestore } from 'firebase/firestore';
+import { Firestore, initializeFirestore } from 'firebase/firestore';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -22,12 +22,6 @@ export class AuthService {
   private router = inject(Router);
   private readonly theme = inject(ThemeService);
   private signingIn = false;
-  private loginCelebrationPending = false;
-  consumeLoginCelebration(): boolean {
-    const pending = this.loginCelebrationPending;
-    this.loginCelebrationPending = false;
-    return pending;
-  }
   readonly demo = environment.demo;
   readonly user = signal<User | null>(null);
   readonly error = signal('');
@@ -51,7 +45,9 @@ export class AuthService {
     try {
       const app = initializeApp(environment.firebase);
       this.auth = getAuth(app);
-      this.db = getFirestore(app);
+      // Close each listen response after data is sent instead of relying on
+      // streaming delivery, which can be buffered by browser/network software.
+      this.db = initializeFirestore(app, { experimentalForceLongPolling: true });
       await setPersistence(this.auth, browserSessionPersistence);
       await new Promise<void>((resolve, reject) =>
         onAuthStateChanged(
@@ -101,9 +97,7 @@ export class AuthService {
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
       const result = await signInWithPopup(auth, provider);
-      const accepted = await this.acceptUser(result.user);
-      this.loginCelebrationPending = accepted;
-      return accepted;
+      return await this.acceptUser(result.user);
     } finally {
       this.signingIn = false;
     }

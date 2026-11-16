@@ -89,6 +89,7 @@ export class ExportService {
       'Profitable Days',
       'Loss Days',
       'Total P&L (₹)',
+      'Profit %',
       'Avg Daily P&L (₹)',
       'Win Rate %',
       'Export Cumulative P&L (₹)',
@@ -100,12 +101,13 @@ export class ExportService {
         m.wins,
         m.losses,
         m.pnl / 100,
+        m.profitPercent === null ? null : m.profitPercent / 100,
         m.average === null ? null : m.average / 100,
         m.winRate === null ? null : m.winRate / 100,
         m.cumulative / 100,
       ]);
-    for (const n of [5, 6, 8]) monthly.getColumn(n).numFmt = '#,##0.00;[Red]-#,##0.00';
-    monthly.getColumn(7).numFmt = '0.00%';
+    for (const n of [5, 7, 9]) monthly.getColumn(n).numFmt = '#,##0.00;[Red]-#,##0.00';
+    for (const n of [6, 8]) monthly.getColumn(n).numFmt = '0.00%';
     const readme = book.addWorksheet('Read Me');
     readme.addRow([
       'Exported values are a snapshot, not formulas. Edit the application and export again to recalculate.',
@@ -117,6 +119,7 @@ export class ExportService {
       'Win rate and win/loss are day-based. Flat days count in averages but not win rate.',
     ]);
     readme.getColumn(1).width = 110;
+    readme.addRow(['Profit % = monthly net P&L / first recorded starting capital that month. Missing or zero capital is blank.']);
     for (const sheet of [daily, monthly]) {
       sheet.views = [{ state: 'frozen', ySplit: 1 }];
       sheet.autoFilter = { from: 'A1', to: { row: 1, column: sheet.columnCount } };

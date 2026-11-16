@@ -8,6 +8,9 @@ test('demo CRUD, duplicate prevention, metrics, filter, export and responsive la
   await expect(page.getByRole('heading', { name: 'Dinesh Trading Journal' })).toBeVisible();
   await page.getByRole('button', { name: 'Load sample data' }).click();
   await expect(page.locator('.metric-card').first()).toContainText('₹5,900.00');
+  await page.getByLabel('Period', { exact: true }).selectOption('2026-11');
+  await page.getByLabel('Filter status').selectOption('Loss');
+  await page.getByLabel('Search entries').fill('hide the new entry');
   await page.getByRole('button', { name: 'New daily entry' }).click();
   await page.getByLabel('Date *', { exact: true }).fill('2026-10-07');
   await page.getByLabel('Profit / Loss (₹) *', { exact: true }).fill('100');
@@ -16,6 +19,9 @@ test('demo CRUD, duplicate prevention, metrics, filter, export and responsive la
   await page.getByLabel('Trades / Notes', { exact: true }).fill('UI test entry');
   await page.getByRole('button', { name: 'Save entry', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Edit 2026-10-07', exact: true })).toBeVisible();
+  await expect(page.getByLabel('Period', { exact: true })).toHaveValue('2026-10');
+  await expect(page.locator('.metric-card').first()).toContainText('₹6,900.00');
+  await page.getByLabel('Period', { exact: true }).selectOption('');
   await page.reload();
   await expect(page.locator('.metric-card').first()).toContainText('₹6,000.00');
   await page.getByRole('button', { name: 'Edit 2026-10-07', exact: true }).click();

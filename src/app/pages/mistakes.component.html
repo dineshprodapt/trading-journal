@@ -9,9 +9,14 @@
 </section>
 <section aria-live="polite" aria-atomic="true">
   <div class="review-heading"><h2>{{ monthLabel(month()) }}</h2><span>{{ mistakes().length }} recurring patterns · {{ notes().length }} daily notes</span></div>
-  <p class="method-note">Patterns mentioned on at least two separate dates in Trades / Notes. Local phrase analysis groups common trading mistakes; it may miss nuanced wording. Counts represent journal days, not individual trades.</p>
+  <p class="method-note">Recurring mistakes found in Trades / Notes on two or more dates. Similar phrases are grouped together, though some descriptions may go unrecognized. Totals reflect the number of journal days, not individual trades.</p>
   @if (journal.loading()) {
-    <div class="empty-review" role="status">Reading your trade notes…</div>
+    <div class="empty-review" role="status">
+      {{ journal.connectionDelayed() ? 'Firestore has not confirmed your notes after 10 seconds. Check your connection or retry.' : 'Reading your trade notes…' }}
+      @if (journal.connectionDelayed()) {
+        <button class="btn btn-outline-secondary" (click)="journal.retryConnection()">Retry connection</button>
+      }
+    </div>
   } @else if (journal.error()) {
     <div class="alert alert-danger" role="alert">{{ journal.error() }}</div>
   } @else {
@@ -30,5 +35,13 @@
         <div class="empty-review"><span aria-hidden="true">◎</span><h3>{{ notes().length ? 'No repeated patterns detected' : 'No trade notes this month' }}</h3><p>{{ notes().length ? 'No supported mistake pattern appears on two separate dates. This does not mean your notes contain no mistakes.' : 'Add Trades / Notes to your daily journal, or choose another month to review.' }}</p></div>
       }
     </div>
+    @if (notes().length) {
+      <details class="method-note">
+        <summary>View analyzed notes · {{ notes().length }} daily notes for {{ monthLabel(month()) }}</summary>
+        @for (entry of notes(); track entry.date) {
+          <blockquote><time [attr.datetime]="entry.date">{{ entry.date }}</time><p>{{ entry.notes }}</p></blockquote>
+        }
+      </details>
+    }
   }
 </section>

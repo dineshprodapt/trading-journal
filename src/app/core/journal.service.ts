@@ -6,7 +6,9 @@ import {
   orderBy,
   query,
   runTransaction,
-  Unsubscribe,
+  QuerySnapshot,
+  DocumentData,
+  FirestoreError,
 } from 'firebase/firestore';
 import { AuthService, friendlyError } from './auth.service';
 import { Entry, validateEntry } from './journal.model';
@@ -18,14 +20,37 @@ export class JournalService {
   readonly loading = signal(true);
   readonly error = signal('');
   readonly cached = signal(false);
-  private stop?: Unsubscribe;
+  readonly connectionDelayed = signal(false);
+  private readonly connectionAttempt = signal(0);
   private readonly demoKey = 'trading-journal-demo-v1';
+  private cacheKey: string | undefined;
+  private subscriptionCount = 0;
+  private trace(event: string, detail: Record<string, unknown> = {}) {
+    // Bounded, data-free timings available in browser DevTools, including production.
+    const name = `journal:${event}`;
+    performance.clearMarks(name);
+    performance.mark(name, { detail: { subscription: this.subscriptionCount, ...detail } });
+  }
+  private listen(uid: string, next: (snapshot: QuerySnapshot<DocumentData>) => void,
+    error: (error: FirestoreError) => void) {
+    return onSnapshot(
+      query(collection(this.auth.db!, 'users', uid, 'entries'), orderBy('date')),
+      { includeMetadataChanges: true }, next, error,
+    );
+  }
   constructor() {
-    effect(() => {
+    effect((onCleanup) => {
+      this.connectionAttempt();
       const user = this.auth.user();
-      this.stop?.();
+      const cacheKey = user ? `trading-journal-session-v1:${user.uid}` : undefined;
+      if (this.cacheKey && this.cacheKey !== cacheKey) {
+        this.clearCache(this.cacheKey);
+      }
+      this.cacheKey = cacheKey;
       this.entries.set([]);
       this.error.set('');
+      this.cached.set(false);
+      this.connectionDelayed.set(false);
       this.loading.set(true);
       if (this.auth.demo) {
         try {
@@ -43,28 +68,82 @@ export class JournalService {
         this.loading.set(false);
         return;
       }
-      this.stop = onSnapshot(
-        query(collection(this.auth.db, 'users', user.uid, 'entries'), orderBy('date')),
-        { includeMetadataChanges: true },
+      let receivedEntries = false;
+      this.subscriptionCount++;
+      this.trace('subscribe');
+      // A listener may keep reconnecting without invoking its error callback.
+      // Surface that state without presenting an unconfirmed empty journal.
+      const connectionTimer = setTimeout(() => this.connectionDelayed.set(true), 10000);
+      // Keep refreshes independent of network latency, within this signed-in tab only.
+      try {
+        const saved = sessionStorage.getItem(cacheKey!);
+        if (saved !== null) {
+          const entries: Entry[] = JSON.parse(saved);
+          if (!Array.isArray(entries)) throw Error('Invalid cache');
+          entries.forEach(validateEntry);
+          this.entries.set(entries);
+          this.cached.set(true);
+          this.loading.set(false);
+        }
+      } catch {
+        this.clearCache(cacheKey!);
+      }
+      const stop = this.listen(
+        user.uid,
         (snapshot) => {
+          this.trace(snapshot.metadata.fromCache ? 'cache-snapshot' : 'server-snapshot', { count: snapshot.size });
+          if (!snapshot.metadata.fromCache) {
+            clearTimeout(connectionTimer);
+            this.connectionDelayed.set(false);
+          }
+          // An empty SDK memory cache is not confirmation that cloud records are empty.
+          if (snapshot.metadata.fromCache && snapshot.empty) return;
           try {
-            const entries = snapshot.docs.map((d) => d.data() as Entry);
-            entries.forEach(validateEntry);
-            this.entries.set(entries);
+            // Metadata-only server confirmations must not rebuild every row and chart.
+            if (!receivedEntries || snapshot.docChanges().length > 0) {
+              const entries = snapshot.docs.map((d) => d.data() as Entry);
+              entries.forEach(validateEntry);
+              this.entries.set(entries);
+              try {
+                sessionStorage.setItem(cacheKey!, JSON.stringify(entries));
+              } catch { /* Storage may be unavailable; the live listener still works. */ }
+              receivedEntries = true;
+            }
             this.cached.set(snapshot.metadata.fromCache);
             this.error.set('');
           } catch {
+            this.clearCache(cacheKey!);
+            this.entries.set([]);
+            this.cached.set(false);
+            receivedEntries = false;
             this.error.set('A stored record has invalid data. Check your Firebase console.');
           }
           this.loading.set(false);
+          this.trace('published');
         },
         (error) => {
+          this.trace('error', { code: error.code });
+          clearTimeout(connectionTimer);
+          this.connectionDelayed.set(false);
+          this.clearCache(cacheKey!);
           this.entries.set([]);
+          this.cached.set(false);
           this.error.set(friendlyError(error));
           this.loading.set(false);
         },
       );
+      onCleanup(() => {
+        this.trace('unsubscribe');
+        clearTimeout(connectionTimer);
+        stop();
+      });
     });
+  }
+  retryConnection() {
+    this.connectionAttempt.update(attempt => attempt + 1);
+  }
+  private clearCache(key: string) {
+    try { sessionStorage.removeItem(key); } catch { /* Storage is optional. */ }
   }
   async save(entry: Entry, expectedRevision: number | null) {
     validateEntry(entry);
@@ -82,6 +161,17 @@ export class JournalService {
       this.check(old.exists() ? (old.data() as Entry) : undefined, expectedRevision);
       transaction.set(ref, entry);
     });
+    // Publish the acknowledged write before returning success to the form.
+    // The live listener continues to reconcile changes from other sessions.
+    if (this.auth.user()?.uid === user.uid) {
+      const current = this.entries().find(e => e.date === entry.date);
+      if (!current || current.revision <= entry.revision) {
+        this.entries.update(entries => [...entries.filter(e => e.date !== entry.date), entry]);
+        try {
+          sessionStorage.setItem(`trading-journal-session-v1:${user.uid}`, JSON.stringify(this.entries()));
+        } catch { /* Storage is optional. */ }
+      }
+    }
   }
   async remove(entry: Entry) {
     if (this.auth.demo) {
