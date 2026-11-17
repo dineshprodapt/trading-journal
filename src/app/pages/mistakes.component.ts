@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { JournalLoaderComponent } from '../shared/journal-loader.component';
 import { JournalService } from '../core/journal.service';
 import { monthLabel, today } from '../core/journal.model';
@@ -9,7 +10,7 @@ import { MonthlyReview, reviewKey, reviewErrorMessage } from '../core/monthly-re
 
 @Component({
   selector: 'app-mistakes',
-  imports: [FormsModule, JournalLoaderComponent],
+  imports: [FormsModule, JournalLoaderComponent, DatePipe],
   templateUrl: './mistakes.component.html',
   styleUrl: './mistakes.component.scss',
 })

@@ -55,13 +55,13 @@
       <button class="btn btn-primary" (click)="analyze()" [disabled]="analyzing() || reviewLoading() || !notes().length || journal.cached() || ai.auth.demo">
         {{ analyzing() ? 'Analyzing monthly notes…' : 'Ask AI Review' }}
       </button>
-      <p class="method-note">Sends this month's notes and your rules to OpenAI. Saved reviews are reused until the source changes.</p>
+      <p class="method-note review-description">Sends this month's notes and your rules to OpenAI. Saved reviews are reused until the source changes.</p>
       @if (ai.auth.demo) { <p class="method-note">AI analysis requires your signed-in journal; it is unavailable in demo mode.</p> }
       @if (reviewLoading()) { <p role="status">Loading saved review…</p> }
       @if (reviewError()) { <p class="alert alert-warning" role="alert">{{ reviewError() }}</p> }
     </div>
     @if (report(); as review) {
-      <p class="method-note">AI review saved {{ review.generatedAt }} · {{ review.model }}</p>
+      <p class="method-note review-metadata">AI review saved <time class="review-timestamp" [attr.datetime]="review.generatedAt">{{ review.generatedAt | date:'dd-MMM-yyyy hh:mm a':'+0530':'en-US' }} IST</time> · Model used: <span class="review-model">{{ review.model }}</span></p>
       @if (stale()) { <p class="alert alert-warning">Notes or rules have changed. This report is out of date; update the AI review.</p> }
       @for (group of groups(); track group.title) {
         @if (group.items.length) {

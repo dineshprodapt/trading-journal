@@ -21,6 +21,11 @@ select { max-width: 260px; }
 h2 { margin: 0; font-size: 1.4rem; }
 .review-heading span, .method-note { font-size: .85rem; opacity: .8; }
 .method-note { line-height: 1.7; max-width: 850px; }
+.review-description { margin-top: 16px; }
+.review-metadata { opacity: 1; }
+.review-timestamp { color: var(--bs-info-text-emphasis); font-size: inherit; font-weight: 600; opacity: 1; }
+.review-model { color: #7135b5; font-weight: 700; }
+:host-context([data-bs-theme='dark']) .review-model { color: #d3a6ff; }
 .mistakes-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 22px; }
 .mistake-card { padding: 24px; border: 1px solid #8a9c8055; border-top: 3px solid #c7984b; border-radius: 16px; background: var(--bs-body-bg); box-shadow: 0 8px 24px #143c3108; overflow-wrap: anywhere; }
 .card-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-bottom: 20px; }
