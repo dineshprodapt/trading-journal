@@ -8,6 +8,8 @@ test('month selection reads November notes and updates patterns without reloadin
  ])));
  await page.goto('/journal');
  await page.locator('.sidebar').getByRole('link', { name: 'Mistakes', exact: true }).click();
+ await expect(page.getByRole('button', { name: 'Ask AI Review' })).toBeDisabled();
+ await page.getByText('Basic phrase matches (not AI)', { exact: true }).click();
  await page.getByLabel('Review month').selectOption('2026-10');
  await expect(page.locator('.mistake-card')).toHaveCount(1);
  await expect(page.locator('.mistake-card')).toContainText('FOMO');
@@ -15,9 +17,10 @@ test('month selection reads November notes and updates patterns without reloadin
  await expect(page.locator('.mistake-card')).toHaveCount(2);
  await expect(page.locator('.mistakes-grid')).not.toContainText('FOMO');
  await page.getByText('View analyzed notes').click();
- await expect(page.locator('details[open]')).toContainText('2026-11-01');
- await expect(page.locator('details[open]')).toContainText('2026-11-02');
- await expect(page.locator('details[open]')).not.toContainText('2026-10');
+ const notesPanel = page.locator('details').filter({ has: page.locator('summary', { hasText: 'View analyzed notes' }) });
+ await expect(notesPanel).toContainText('2026-11-01');
+ await expect(notesPanel).toContainText('2026-11-02');
+ await expect(notesPanel).not.toContainText('2026-10');
 });
 test('mistakes default month, evidence, navigation and mobile', async ({ page }) => {
  const month = today().slice(0, 7);
@@ -28,6 +31,7 @@ test('mistakes default month, evidence, navigation and mobile', async ({ page })
  ])), { month });
  await page.goto('/journal');
  await page.locator('.sidebar').getByRole('link', { name: 'Mistakes', exact: true }).click();
+ await page.getByText('Basic phrase matches (not AI)', { exact: true }).click();
  await expect(page.getByRole('heading', { name: 'Mistakes', exact: true })).toBeVisible();
  await expect(page.getByLabel('Review month')).toHaveValue(month);
  await expect(page.locator('.mistake-card')).toHaveCount(1);
@@ -36,11 +40,13 @@ test('mistakes default month, evidence, navigation and mobile', async ({ page })
  await page.getByLabel('Review month').selectOption('2020-01');
  await expect(page.getByText('No repeated patterns detected')).toBeVisible();
  await page.reload();
+ await page.getByText('Basic phrase matches (not AI)', { exact: true }).click();
  await expect(page.getByLabel('Review month')).toHaveValue(month);
  await page.getByRole('button', { name: 'Daily journal' }).click();
  await expect(page.locator('#daily')).toBeFocused();
  await page.setViewportSize({ width: 390, height: 844 });
  await page.locator('.mobile-page-nav').getByRole('link', { name: 'Mistakes', exact: true }).click();
+ await page.getByText('Basic phrase matches (not AI)', { exact: true }).click();
  await expect(page.locator('.mistake-card')).toBeVisible();
  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

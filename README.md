@@ -1,5 +1,7 @@
 # Trading Journal
 
+Monthly semantic AI mistake reviews are available through an optional secure backend. See [AI review setup](AI-REVIEW-SETUP.md) for credentials, billing, deployment and validation. The basic journal still works without this backend.
+
 A complete standalone Angular application using Bootstrap 5, Firebase Authentication + Firestore, Chart.js and ExcelJS. Designed around **Trading_Daily_Monthly_Tracker_Oct2026-Oct2027_FIXED.xlsx**, version 2, read on 7 October 2026.
 
 ## Configured Firebase project

@@ -24,6 +24,10 @@ service cloud.firestore {
         && (e.tradeCount == null || (e.tradeCount is int && e.tradeCount >= 0 && e.tradeCount <= 100000))
         && e.revision is int && e.revision >= 1;
     }
+    match /users/{uid}/monthlyReviews/{month} {
+      allow read: if owner(uid);
+      allow write: if false;
+    }
     match /users/{uid}/entries/{date} {
       allow read: if owner(uid);
       allow create: if owner(uid) && valid(request.resource.data,date) && request.resource.data.revision == 1;

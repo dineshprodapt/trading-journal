@@ -8,6 +8,10 @@
 
 # Node
 /node_modules
+/functions/node_modules
+/functions/lib
+/functions/.env*
+/functions/.secret*
 npm-debug.log
 yarn-error.log
 

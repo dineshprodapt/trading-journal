@@ -25,6 +25,10 @@ import { TrendChartComponent } from '../shared/trend-chart.component';
   selector: 'app-journal',
   imports: [CommonModule, FormsModule, ReactiveFormsModule, TrendChartComponent, RouterLink, MistakesComponent, TradingRulesComponent, ThemeToggleComponent],
   templateUrl: './journal.component.html',
+  host: {
+    '(window:scroll)': 'updateActiveSection()',
+    '(window:resize)': 'updateActiveSection()',
+  },
 })
 export class JournalComponent {
   private readonly route = inject(ActivatedRoute);
@@ -184,11 +188,26 @@ export class JournalComponent {
       const section = this.route.snapshot.fragment;
       if (!this.isDetailPage && (section === 'overview' || section === 'daily' || section === 'monthly')) {
         this.scrollToSection(section);
+      } else {
+        this.updateActiveSection();
       }
     });
     effect(() => {
       if (!this.auth.demo && !this.auth.user()) void this.router.navigateByUrl('/login');
     });
+  }
+  updateActiveSection() {
+    if (this.isDetailPage) return;
+    const threshold = (document.querySelector('.topbar')?.getBoundingClientRect().bottom ?? 0) + 24;
+    let current: 'overview' | 'daily' | 'monthly' = 'overview';
+    for (const section of ['daily', 'monthly'] as const) {
+      const target = document.getElementById(section);
+      if (target && target.getBoundingClientRect().top <= threshold) current = section;
+    }
+    // The last section can be too short to reach the header at the end of the page.
+    if (window.scrollY > 0 && window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2
+      && document.getElementById('monthly')) current = 'monthly';
+    this.activeSection.set(current);
   }
   scrollToSection(section: 'overview' | 'daily' | 'monthly') {
     if (this.isDetailPage) {

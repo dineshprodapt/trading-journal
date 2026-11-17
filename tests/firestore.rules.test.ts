@@ -25,6 +25,23 @@ before(async () => {
 after(async () => {
   await env?.cleanup();
 });
+test('AI reports are owner-readable and cannot be written by clients; usage stays private', async () => {
+  const owner = env.authenticatedContext('review-owner', {
+    email: 'dineshmick@gmail.com', email_verified: true, firebase: { sign_in_provider: 'google.com' },
+  }).firestore();
+  const other = env.authenticatedContext('other-review-owner', {
+    email: 'dineshmick@gmail.com', email_verified: true, firebase: { sign_in_provider: 'google.com' },
+  }).firestore();
+  const path = 'users/review-owner/monthlyReviews/2026-11';
+  await env.withSecurityRulesDisabled(async ctx => { await setDoc(doc(ctx.firestore(), path), { findings: [] }); });
+  await assertSucceeds(getDoc(doc(owner, path)));
+  await assertFails(getDoc(doc(other, path)));
+  await assertFails(getDoc(doc(env.unauthenticatedContext().firestore(), path)));
+  await assertFails(setDoc(doc(owner, path), { findings: [] }));
+  await assertFails(deleteDoc(doc(owner, path)));
+  await assertFails(getDoc(doc(owner, 'users/review-owner/reviewRequests/usage')));
+  await assertFails(setDoc(doc(owner, 'users/review-owner/reviewRequests/usage'), { count: 0 }));
+});
 test('only owner can CRUD; invalid schema and stale revisions are rejected', async () => {
   const alice = env
       .authenticatedContext('alice', {

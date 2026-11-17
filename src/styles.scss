@@ -349,6 +349,10 @@ app-trading-rules .rule-card .rule-green { color: #357000; }
   padding: 28px 38px;
   margin: auto;
 }
+.main-content:focus,
+.main-content > section[tabindex='-1']:focus {
+  outline: none;
+}
 .demo-banner {
   display: flex;
   gap: 10px;

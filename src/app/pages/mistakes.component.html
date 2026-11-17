@@ -1,4 +1,8 @@
+@if (analyzing()) {
+  <app-journal-loader message="Reviewing your monthly notes with AI…" />
+}
 <section class="mistakes-hero" aria-labelledby="mistakes-title">
+  <div class="hero-intro">
   <span class="eyebrow">REFLECT · REFINE · IMPROVE</span>
   <h1 id="mistakes-title">Mistakes</h1>
   <p>Spot the patterns. Break the cycle.</p>
@@ -6,10 +10,36 @@
   <select id="mistakes-month" class="form-select" [ngModel]="month()" (ngModelChange)="month.set($event)">
     @for (value of months(); track value) { <option [value]="value">{{ monthLabel(value) }}</option> }
   </select>
+  </div>
+  <aside class="monthly-focus" aria-labelledby="monthly-focus-title" aria-live="polite">
+    <h2 id="monthly-focus-title" class="focus-eyebrow">THIS MONTH’S FOCUS</h2>
+    @if (reviewLoading()) {
+      <p class="focus-title">Finding your monthly focus…</p>
+      <p>Loading your saved review.</p>
+    } @else if (report()) {
+      @if (monthlyFocus(); as focus) {
+        <h3 class="focus-title">{{ focus.title }}</h3>
+        <p class="focus-action"><span>ONE ACTION TO PRACTICE</span>{{ focus.action }}</p>
+        <p class="focus-evidence">Appears on {{ focus.evidence.length }} Journal days · Check the supporting excerpts below.</p>
+      } @else {
+        <h3 class="focus-title">No repeated pattern identified</h3>
+        <p>Keep recording your decisions and review any individual observations below.</p>
+      }
+      @if (stale()) { <p class="focus-stale">Based on an earlier review. Ask AI Review to update it with your latest notes and rules.</p> }
+      <div class="focus-stats">
+        <span><b>{{ notes().length }}</b> notes this month</span>
+        <span><b>{{ repeatedFindings().length }}</b> repeated patterns</span>
+      </div>
+    } @else {
+      <h3 class="focus-title">Turn reflection into your next step</h3>
+      <p>{{ ai.auth.demo ? 'Sign in to discover your monthly focus with AI Review.' : 'Ask AI Review to discover your monthly focus.' }}</p>
+      <div class="focus-stats"><span><b>{{ notes().length }}</b> notes this month</span></div>
+    }
+  </aside>
 </section>
 <section aria-live="polite" aria-atomic="true">
-  <div class="review-heading"><h2>{{ monthLabel(month()) }}</h2><span>{{ mistakes().length }} recurring patterns · {{ notes().length }} daily notes</span></div>
-  <p class="method-note">Recurring mistakes found in Trades / Notes on two or more dates. Similar phrases are grouped together, though some descriptions may go unrecognized. Totals reflect the number of journal days, not individual trades.</p>
+  <div class="review-heading"><h2>{{ monthLabel(month()) }}</h2><span>{{ notes().length }} daily notes</span></div>
+  <p class="method-note">AI reads the month's notes and your trading rules to group mistakes by meaning. Repeated patterns require evidence on two or more journal days. Interpretations can be wrong; check the supporting excerpts.</p>
   @if (journal.loading()) {
     <div class="empty-review" role="status">
       {{ journal.connectionDelayed() ? 'Firestore has not confirmed your notes after 10 seconds. Check your connection or retry.' : 'Reading your trade notes…' }}
@@ -21,10 +51,48 @@
     <div class="alert alert-danger" role="alert">{{ journal.error() }}</div>
   } @else {
     @if (journal.cached()) { <p class="method-note">Showing cached notes. Results update when your journal syncs.</p> }
+    <div class="ai-review-controls">
+      <button class="btn btn-primary" (click)="analyze()" [disabled]="analyzing() || reviewLoading() || !notes().length || journal.cached() || ai.auth.demo">
+        {{ analyzing() ? 'Analyzing monthly notes…' : 'Ask AI Review' }}
+      </button>
+      <p class="method-note">Sends this month's notes and your rules to OpenAI. Saved reviews are reused until the source changes.</p>
+      @if (ai.auth.demo) { <p class="method-note">AI analysis requires your signed-in journal; it is unavailable in demo mode.</p> }
+      @if (reviewLoading()) { <p role="status">Loading saved review…</p> }
+      @if (reviewError()) { <p class="alert alert-warning" role="alert">{{ reviewError() }}</p> }
+    </div>
+    @if (report(); as review) {
+      <p class="method-note">AI review saved {{ review.generatedAt }} · {{ review.model }}</p>
+      @if (stale()) { <p class="alert alert-warning">Notes or rules have changed. This report is out of date; update the AI review.</p> }
+      @for (group of groups(); track group.title) {
+        @if (group.items.length) {
+          <h3>{{ group.title }}</h3>
+          <div class="mistakes-grid">
+            @for (finding of group.items; track finding.title) {
+              <article class="mistake-card">
+                <span class="frequency"><span class="frequency-count">{{ finding.evidence.length }}</span> Journal days</span>
+                <h4>{{ finding.title }}</h4>
+                <p>{{ finding.explanation }}</p>
+                <p><strong>Next step:</strong> {{ finding.action }}</p>
+                <details><summary>View supporting excerpts · {{ finding.evidence.length }}</summary>
+                  @for (item of finding.evidence; track item.date) {
+                    <blockquote><time [attr.datetime]="item.date">{{ item.date }}</time><p>{{ item.quote }}</p></blockquote>
+                  }
+                </details>
+              </article>
+            }
+          </div>
+        }
+      }
+      @if (!review.findings.length) { <p class="empty-review">AI found no sufficiently supported mistakes in these notes. This does not prove that no mistakes occurred.</p> }
+    } @else if (!reviewLoading()) {
+      <p class="method-note">No saved AI review for this month. Analyze the notes to identify patterns beyond keyword matches.</p>
+    }
+    <details class="method-note"><summary>Basic phrase matches (not AI)</summary>
+    <p>Limited keyword suggestions from the original detector; these are separate from the AI review.</p>
     <div class="mistakes-grid">
       @for (mistake of mistakes(); track mistake.title; let index = $index) {
         <article class="mistake-card">
-          <div class="card-top"><span class="pattern-number">{{ (index + 1).toString().padStart(2, '0') }}</span><span class="frequency">{{ mistake.evidence.length }} journal days</span></div>
+          <div class="card-top"><span class="pattern-number">{{ (index + 1).toString().padStart(2, '0') }}</span><span class="frequency"><span class="frequency-count">{{ mistake.evidence.length }}</span> Journal days</span></div>
           <h3>{{ mistake.title }}</h3>
           <ul><li>{{ mistake.action }}</li></ul>
           <details><summary>View supporting notes · {{ mistake.evidence.length }}</summary>
@@ -35,6 +103,7 @@
         <div class="empty-review"><span aria-hidden="true">◎</span><h3>{{ notes().length ? 'No repeated patterns detected' : 'No trade notes this month' }}</h3><p>{{ notes().length ? 'No supported mistake pattern appears on two separate dates. This does not mean your notes contain no mistakes.' : 'Add Trades / Notes to your daily journal, or choose another month to review.' }}</p></div>
       }
     </div>
+    </details>
     @if (notes().length) {
       <details class="method-note">
         <summary>View analyzed notes · {{ notes().length }} daily notes for {{ monthLabel(month()) }}</summary>
