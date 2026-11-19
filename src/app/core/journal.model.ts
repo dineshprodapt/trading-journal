@@ -105,7 +105,7 @@ export function summary(entries: Entry[]) {
     flat: entries.length - wins - losses,
     pnl,
     winRate: wins + losses ? (wins / (wins + losses)) * 100 : null,
-    ratio: losses ? (wins / losses).toFixed(2) + ' : 1' : wins ? 'No loss days' : '—',
+    ratio: losses ? Number((wins / losses).toFixed(2)) + ' : 1' : wins ? 'No loss days' : '—',
     trades: entries.reduce((s, e) => s + (e.tradeCount ?? 0), 0),
     missingCounts: entries.filter((e) => e.tradeCount === null).length,
     average: entries.length ? pnl / entries.length : null,

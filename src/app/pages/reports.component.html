@@ -1,0 +1,66 @@
+<section class="report-toolbar">
+  <h1>Profit and Loss Details</h1>
+  <div class="filters">
+    <span>Date Range:</span>
+    @for (option of presets; track option) {
+      <button type="button" [class.selected]="preset() === option" [attr.aria-pressed]="preset() === option" (click)="selectPreset(option)">{{ option }}</button>
+    }
+    <div class="date-inputs">
+      <input type="date" aria-label="Report start date" [min]="firstDate" max="2099-12-31" [ngModel]="start()" (ngModelChange)="start.set($event); preset.set('Custom')" />
+      <span>–</span>
+      <input type="date" aria-label="Report end date" [min]="start()" max="2099-12-31" [ngModel]="rangeEnd()" (ngModelChange)="end.set($event); preset.set('Custom')" />
+    </div>
+  </div>
+</section>
+@if (invalid()) {
+  <p role="alert">Choose a valid date range from 1 October 2026 onward, ending by 31 December 2099.</p>
+} @else if (journal.error()) {
+  <p role="alert">{{ journal.error() }}</p>
+} @else {
+  @if (journal.cached() || journal.connectionDelayed()) {
+    <p role="status">Waiting for server confirmation. {{ journal.cached() ? 'Showing cached entries.' : 'Your entries have not loaded yet.' }}
+      <button type="button" (click)="journal.retryConnection()">Retry connection</button>
+    </p>
+  }
+  @if (journal.loading()) {
+    <p role="status">Loading your entries…</p>
+  } @else {
+    <section class="report-panel" aria-label="Daily profit and loss report">
+      <div class="report-summary">
+        <div class="summary-metric">
+        <span class="summary-icon" aria-hidden="true">₹</span>
+        <div><span>Total Profit / Loss</span><strong [class.loss-text]="total() < 0" data-testid="report-total">{{ money(total()) }}</strong></div>
+        </div>
+        <div class="summary-metric" data-testid="report-highest-profit">
+          <span class="summary-icon" aria-hidden="true">↗</span>
+          <div><span>Single-day highest profit</span><strong class="profit-text">{{ money(highestProfit()?.pnl ?? null) }}</strong>
+            <small>{{ highestProfit() ? (highestProfit()!.date | date:'dd MMM yyyy') : 'No profit days' }}</small></div>
+        </div>
+        <div class="summary-metric" data-testid="report-highest-loss">
+          <span class="summary-icon loss-icon" aria-hidden="true">↘</span>
+          <div><span>Single-day highest loss</span><strong class="loss-text">{{ money(highestLoss()?.pnl ?? null) }}</strong>
+            <small>{{ highestLoss() ? (highestLoss()!.date | date:'dd MMM yyyy') : 'No loss days' }}</small></div>
+        </div>
+      </div>
+      <div class="range"><span>{{ start() | date:'dd MMM yyyy' }} - {{ rangeEnd() | date:'dd MMM yyyy' }}</span></div>
+      <div class="months" tabindex="0" aria-label="Monthly calendars; scroll horizontally to see more months">
+        @for (month of months(); track month.key) {
+          <section class="month">
+            <h2>{{ month.date | date:'MMM yy' }}</h2>
+            <div class="days">
+              @for (day of month.days; track day.date; let first = $first) {
+                <button type="button" class="day" [style.grid-column-start]="first ? month.offset + 1 : null"
+                  [class.profit]="day.pnl !== undefined && day.pnl > 0" [class.loss]="day.pnl !== undefined && day.pnl < 0"
+                  [class.flat]="day.pnl === 0" [class.outside]="day.outside" [disabled]="day.outside"
+                  [attr.aria-label]="day.label" [attr.data-tooltip]="day.label"></button>
+              }
+            </div>
+            <div class="month-total" [class.loss-text]="month.total < 0">{{ money(month.total) }}</div>
+          </section>
+        }
+      </div>
+      <div class="legend"><span><i class="profit"></i>Profit</span><span><i class="loss"></i>Loss</span><span><i class="flat"></i>Flat</span><span><i></i>No entry</span><span>Monday → Sunday · Hover or focus a day for P&amp;L</span></div>
+      @if (!entries().length) { <p class="empty" role="status">No journal entries in this date range.</p> }
+    </section>
+  }
+}

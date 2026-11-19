@@ -1,0 +1,43 @@
+:host { display: block; color: #e5e7eb; font-size: 13px; }
+.report-toolbar, .report-panel { background: #0d0e0d; border-radius: 18px; }
+.report-toolbar { padding: 20px; margin-bottom: 14px; }
+h1 { font-size: 18px; font-weight: 650; margin: 0 0 22px; color: #fff; }
+.filters, .date-inputs { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.filters > span { color: #c3c7ce; }
+.filters button, input { border: 1px solid #303230; border-radius: 6px; background: transparent; color: #e5e7eb; padding: 5px 12px; min-height: 32px; }
+.filters button.selected, .date-inputs { background: #171923; color: #8e9aff; border-radius: 6px; }
+input { color-scheme: dark; padding: 4px; max-width: 145px; }
+button:focus-visible, input:focus-visible, .months:focus-visible { outline: 2px solid #47bfb5; outline-offset: 4px; }
+.report-summary { display: flex; flex-wrap: wrap; gap: 18px 0; padding: 18px; border-bottom: 1px solid #24554f; }
+.summary-metric { display: flex; flex: 1 1 240px; align-items: center; justify-content: center; gap: 12px; padding: 0 12px; }
+.summary-metric + .summary-metric { border-left: 1px solid #282928; }
+.summary-metric small { display: block; color: #a8b2ad; margin-top: 4px; }
+.summary-icon { flex-shrink: 0; }
+.report-summary .profit-text { color: #65d5a2; }
+.report-summary .loss-icon { background: #321c20; color: #ff737a; }
+@media (max-width: 600px) { .summary-metric { justify-content: flex-start; } .summary-metric + .summary-metric { border-left: 0; border-top: 1px solid #282928; padding-top: 16px; } }
+.summary-icon { display: grid; place-items: center; width: 48px; height: 48px; background: #142e27; border-radius: 50%; font-size: 24px; color: #59bcb0; }
+.report-summary strong { display: block; margin-top: 4px; font-size: 16px; color: #f0ca80; }
+.range { text-align: center; padding: 24px 16px 12px; }
+.range span { display: inline-block; border-radius: 30px; padding: 9px 16px; background: #112b24; }
+.months { display: flex; overflow-x: auto; padding: 26px 20px 24px; scrollbar-color: #34544d #101310; }
+.month { flex: 0 0 190px; padding: 0 18px; border-right: 1px dashed #2b2c2b; }
+.month:last-child { border-right: 0; }
+h2 { font-size: 13px; font-weight: 400; border-bottom: 1px solid #3aa69b; padding-bottom: 10px; margin: 0 0 10px; }
+.days { display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(6, 25px); gap: 5px; align-items: center; }
+.day, .legend i { width: 16px; height: 16px; border-radius: 50%; background: #222422; border: 0; padding: 0; }
+.day { position: relative; cursor: pointer; }
+.profit { background: #3bafa4 !important; }
+.loss { background: #ff6068 !important; }
+.flat { background: #abb3b0 !important; }
+.outside { opacity: .2; cursor: default; }
+.day:hover::after, .day:focus::after { content: attr(data-tooltip); position: absolute; bottom: 23px; left: -12px; z-index: 2; background: #263b35; color: #fff; border: 1px solid #47776a; border-radius: 5px; padding: 8px; white-space: nowrap; pointer-events: none; font-size: 12px; }
+.month:last-child .day:nth-child(7n):hover::after, .month:last-child .day:nth-child(7n):focus::after { left: auto; right: 0; }
+.month-total { border-top: 1px solid #282928; padding-top: 8px; color: #40c5bd; font-weight: 600; }
+.loss-text { color: #ff737a !important; }
+.legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 4px 24px 22px; color: #a8b2ad; font-size: 12px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 10px; height: 10px; }
+.empty { padding: 0 24px 22px; margin: 0; color: #b6bdb9; }
+:host > p { color: var(--ink); }
+@media (max-width: 600px) { .report-toolbar { padding: 16px; } .filters { gap: 8px; } .date-inputs { gap: 4px; } .months { padding-left: 4px; } }

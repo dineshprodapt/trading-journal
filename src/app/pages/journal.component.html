@@ -31,6 +31,7 @@
       </button>
       <a routerLink="/journal/rules" [class.active]="isRulesPage" [attr.aria-current]="isRulesPage ? 'page' : null">✦ <span>My Trading Rules</span></a>
       <a routerLink="/journal/mistakes" [class.active]="isMistakesPage" [attr.aria-current]="isMistakesPage ? 'page' : null"><span aria-hidden="true">&#9678;</span> <span>Mistakes</span></a>
+      <a routerLink="/journal/reports" [class.active]="isReportsPage" [attr.aria-current]="isReportsPage ? 'page' : null"><span aria-hidden="true">▦</span> <span>Reports</span></a>
     </nav>
     <div class="sidebar-foot">
       <span class="status-dot"></span>{{ auth.demo ? 'Local demo' : 'Private journal' }}
@@ -80,8 +81,10 @@
       </div>
     </header>
     <main id="overview" tabindex="-1" class="main-content">
-      <nav class="mobile-page-nav" aria-label="Page navigation"><a routerLink="/journal">Journal</a><a routerLink="/journal/rules" [attr.aria-current]="isRulesPage ? 'page' : null">My Trading Rules</a><a routerLink="/journal/mistakes" [attr.aria-current]="isMistakesPage ? 'page' : null">Mistakes</a></nav>
-      @if (isRulesPage) {
+      <nav class="mobile-page-nav" aria-label="Page navigation"><a routerLink="/journal" [attr.aria-current]="!isDetailPage ? 'page' : null">Journal</a><a routerLink="/journal/rules" [attr.aria-current]="isRulesPage ? 'page' : null">My Trading Rules</a><a routerLink="/journal/mistakes" [attr.aria-current]="isMistakesPage ? 'page' : null">Mistakes</a><a routerLink="/journal/reports" [attr.aria-current]="isReportsPage ? 'page' : null">Reports</a></nav>
+      @if (isReportsPage) {
+        <app-reports />
+      } @else if (isRulesPage) {
         <app-trading-rules />
       } @else if (isMistakesPage) {
         <app-mistakes />

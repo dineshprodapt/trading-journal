@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MistakesComponent } from './mistakes.component';
+import { ReportsComponent } from './reports.component';
 import { TradingRulesComponent } from './trading-rules.component';
 import { ThemeToggleComponent } from '../shared/theme-toggle.component';
 import { AuthService, friendlyError } from '../core/auth.service';
@@ -23,7 +24,7 @@ import { ExportService } from '../core/export.service';
 import { TrendChartComponent } from '../shared/trend-chart.component';
 @Component({
   selector: 'app-journal',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, TrendChartComponent, RouterLink, MistakesComponent, TradingRulesComponent, ThemeToggleComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TrendChartComponent, RouterLink, MistakesComponent, ReportsComponent, TradingRulesComponent, ThemeToggleComponent],
   templateUrl: './journal.component.html',
   host: {
     '(window:scroll)': 'updateActiveSection()',
@@ -34,7 +35,8 @@ export class JournalComponent {
   private readonly route = inject(ActivatedRoute);
   readonly isRulesPage = this.route.snapshot.data['tradingRules'] === true;
   readonly isMistakesPage = this.route.snapshot.data['mistakes'] === true;
-  readonly isDetailPage = this.isRulesPage || this.isMistakesPage;
+  readonly isReportsPage = this.route.snapshot.data['reports'] === true;
+  readonly isDetailPage = this.isRulesPage || this.isMistakesPage || this.isReportsPage;
   auth = inject(AuthService);
   displayName = computed(() => {
     const user = this.auth.user();
