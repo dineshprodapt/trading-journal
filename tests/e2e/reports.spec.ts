@@ -17,7 +17,21 @@ test('reports includes weekend and flat entries, filters totals, and supports mo
   await expect(page.getByTestId('report-highest-profit')).toContainText('03 Oct 2026');
   await expect(page.getByTestId('report-highest-loss')).toContainText('-₹234.56');
   await expect(page.locator('.month-total')).toHaveText(['₹1,000.00', '-₹50.00']);
+  for (const viewport of [{ width: 1366, height: 650 }, { width: 1024, height: 768 }]) {
+    await page.setViewportSize(viewport);
+    const totals = await page.locator('.month-total').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().bottom));
+    expect(totals.every(bottom => bottom <= viewport.height)).toBe(true);
+  }
   await expect(page.getByRole('button', { name: '2026-10-03: Profit ₹1,234.56', exact: true })).toHaveClass(/profit/);
+  await page.getByRole('button', { name: '2026-10-03: Profit ₹1,234.56', exact: true }).hover();
+  await expect(page.getByRole('tooltip')).toContainText('03 Oct 2026');
+  await expect(page.getByRole('tooltip').locator('.tooltip-label')).toHaveText('Profit');
+  await expect(page.getByRole('tooltip')).toContainText('₹1,234.56');
+  await page.getByRole('button', { name: '2026-10-04: Loss -₹234.56', exact: true }).focus();
+  await expect(page.getByRole('tooltip')).toContainText('-₹234.56');
+  await expect(page.getByRole('tooltip').locator('.tooltip-label')).toHaveText('Loss');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('tooltip')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '2026-10-05: Flat ₹0.00', exact: true })).toHaveClass(/flat/);
   await page.getByLabel('Report start date').fill('2026-11-01');
   await expect(page.getByTestId('report-total')).toHaveText('-₹50.00');

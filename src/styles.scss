@@ -375,6 +375,12 @@ app-trading-rules .rule-card .rule-green { color: #357000; }
 .main-content > section[tabindex='-1']:focus {
   outline: none;
 }
+@media (min-width: 768px) {
+  .reports-workspace .topbar { padding-top: 12px; }
+  .reports-workspace .header-account { padding-bottom: 10px; }
+  .reports-workspace .main-content { padding-top: 12px; padding-bottom: 12px; }
+  .reports-workspace footer { padding-top: 12px; }
+}
 .demo-banner {
   display: flex;
   gap: 10px;

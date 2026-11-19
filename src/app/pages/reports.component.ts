@@ -9,10 +9,18 @@ import { Entry, money, today } from '../core/journal.model';
   imports: [FormsModule, DatePipe],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.scss',
+  host: { '(window:scroll)': 'tooltip.set(null)', '(window:resize)': 'tooltip.set(null)' },
 })
 export class ReportsComponent {
   readonly journal = inject(JournalService);
   readonly money = money;
+  readonly tooltip = signal<{ date: string; pnl: number | undefined; left: number; bottom: number; arrow: number } | null>(null);
+  showTooltip(event: Event, day: { date: string; pnl: number | undefined }) {
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const center = rect.left + rect.width / 2;
+    const left = Math.max(8, Math.min(center - 80, window.innerWidth - 168));
+    this.tooltip.set({ ...day, left, bottom: window.innerHeight - rect.top + 10, arrow: center - left });
+  }
   readonly firstDate = '2026-10-01';
   readonly start = signal(this.firstDate);
   readonly end = signal(today() < this.firstDate ? this.firstDate : today());

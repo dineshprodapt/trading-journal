@@ -43,7 +43,7 @@
         </div>
       </div>
       <div class="range"><span>{{ start() | date:'dd MMM yyyy' }} - {{ rangeEnd() | date:'dd MMM yyyy' }}</span></div>
-      <div class="months" tabindex="0" aria-label="Monthly calendars; scroll horizontally to see more months">
+      <div class="months" tabindex="0" (scroll)="tooltip.set(null)" aria-label="Monthly calendars; scroll horizontally to see more months">
         @for (month of months(); track month.key) {
           <section class="month">
             <h2>{{ month.date | date:'MMM yy' }}</h2>
@@ -52,13 +52,24 @@
                 <button type="button" class="day" [style.grid-column-start]="first ? month.offset + 1 : null"
                   [class.profit]="day.pnl !== undefined && day.pnl > 0" [class.loss]="day.pnl !== undefined && day.pnl < 0"
                   [class.flat]="day.pnl === 0" [class.outside]="day.outside" [disabled]="day.outside"
-                  [attr.aria-label]="day.label" [attr.data-tooltip]="day.label"></button>
+                  [attr.aria-label]="day.label" [attr.aria-describedby]="tooltip()?.date === day.date ? 'day-pnl-tooltip' : null"
+                  (mouseenter)="showTooltip($event, day)" (mouseleave)="tooltip.set(null)"
+                  (focus)="showTooltip($event, day)" (blur)="tooltip.set(null)"
+                  (click)="showTooltip($event, day)" (keydown.escape)="tooltip.set(null)"></button>
               }
             </div>
             <div class="month-total" [class.loss-text]="month.total < 0">{{ money(month.total) }}</div>
           </section>
         }
       </div>
+      @if (tooltip(); as detail) {
+        <div id="day-pnl-tooltip" class="day-tooltip" role="tooltip"
+          [style.left.px]="detail.left" [style.bottom.px]="detail.bottom" [style.--arrow-left]="detail.arrow + 'px'">
+          <span class="tooltip-date">{{ detail.date | date:'dd MMM yyyy' }}</span>
+          <span class="tooltip-label">{{ detail.pnl === undefined ? 'Profit/Loss' : detail.pnl > 0 ? 'Profit' : detail.pnl < 0 ? 'Loss' : 'Flat' }}</span>
+          <strong [class.tooltip-loss]="detail.pnl !== undefined && detail.pnl < 0" [class.tooltip-flat]="detail.pnl === 0 || detail.pnl === undefined">{{ detail.pnl === undefined ? 'No entry' : money(detail.pnl) }}</strong>
+        </div>
+      }
       <div class="legend"><span><i class="profit"></i>Profit</span><span><i class="loss"></i>Loss</span><span><i class="flat"></i>Flat</span><span><i></i>No entry</span><span>Monday → Sunday · Hover or focus a day for P&amp;L</span></div>
       @if (!entries().length) { <p class="empty" role="status">No journal entries in this date range.</p> }
     </section>
