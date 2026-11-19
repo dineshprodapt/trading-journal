@@ -15,6 +15,7 @@ import { Entry, validateEntry } from './journal.model';
 
 @Injectable({ providedIn: 'root' })
 export class JournalService {
+  readonly loginPresentationPending = signal(false);
   private auth = inject(AuthService);
   readonly entries = signal<Entry[]>([]);
   readonly loading = signal(true);

@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, friendlyError } from '../core/auth.service';
 import { ThemeToggleComponent } from '../shared/theme-toggle.component';
+import { JournalService } from '../core/journal.service';
 @Component({
   selector: 'app-login',
   imports: [RouterLink, ThemeToggleComponent],
@@ -84,6 +85,7 @@ import { ThemeToggleComponent } from '../shared/theme-toggle.component';
 export class LoginComponent {
   auth = inject(AuthService);
   router = inject(Router);
+  private readonly journal = inject(JournalService);
   busy = signal(false);
   message = signal('');
   async google() {
@@ -92,9 +94,11 @@ export class LoginComponent {
     this.message.set('');
     try {
       if (await this.auth.google()) {
-        await this.router.navigateByUrl('/journal');
+        this.journal.loginPresentationPending.set(true);
+        if (!await this.router.navigateByUrl('/journal')) this.journal.loginPresentationPending.set(false);
       }
     } catch (e) {
+      this.journal.loginPresentationPending.set(false);
       this.message.set(friendlyError(e));
     } finally {
       this.busy.set(false);

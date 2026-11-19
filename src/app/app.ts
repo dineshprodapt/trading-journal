@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ThemeService } from './core/theme.service';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationSkipped, NavigationStart, Router, RouterOutlet } from '@angular/router';
@@ -23,13 +23,29 @@ export class App {
   // Subscribe as soon as the account is validated, alongside the lazy route download.
   private readonly journal = inject(JournalService);
   private readonly navigating = signal(true);
-  readonly loading = computed(() => this.navigating());
+  private readonly loginHold = signal(false);
+  readonly loading = computed(() => this.navigating() || this.journal.loginPresentationPending() || this.loginHold());
   readonly loadingMessage = computed(() =>
     !this.auth.demo && !this.auth.user() ? 'Restoring your session…'
       : 'Opening your workspace…',
   );
 
   constructor() {
+    effect(() => {
+      if (!this.journal.loginPresentationPending()) return;
+      // Let connection errors and retry controls remain reachable.
+      if (this.journal.error() || this.journal.connectionDelayed() || (!this.auth.demo && !this.auth.user())) {
+        this.journal.loginPresentationPending.set(false);
+      } else if (!this.journal.loading() && !this.journal.cached()) {
+        this.journal.loginPresentationPending.set(false);
+        this.loginHold.set(true);
+      }
+    });
+    effect(onCleanup => {
+      if (!this.loginHold()) return;
+      const timer = setTimeout(() => this.loginHold.set(false), 3000);
+      onCleanup(() => clearTimeout(timer));
+    });
     inject(Router).events.pipe(takeUntilDestroyed()).subscribe(event => {
       if (event instanceof NavigationStart) this.navigating.set(true);
       if (event instanceof NavigationEnd || event instanceof NavigationCancel ||
