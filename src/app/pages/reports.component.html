@@ -28,6 +28,19 @@
     <section class="report-panel" aria-label="Daily profit and loss report">
       <div class="report-summary">
         <div class="summary-metric">
+        <svg class="coin-dancer" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <ellipse class="coin-shadow" cx="32" cy="58" rx="14" ry="3" fill="#f0ca80" opacity=".18" />
+          <g class="coin-body">
+            <path d="M24 44 L21 53 L16 53 M40 44 L43 53 L48 53" fill="none" stroke="#d5ae60" stroke-width="4" stroke-linecap="round" />
+            <path d="M15 29 L8 24 L5 28" fill="none" stroke="#d5ae60" stroke-width="3" stroke-linecap="round" />
+            <path class="coin-wave" d="M49 29 L56 22 L55 16" fill="none" stroke="#d5ae60" stroke-width="3" stroke-linecap="round" />
+            <circle cx="32" cy="29" r="19" fill="#edc66e" stroke="#af7d31" stroke-width="2" />
+            <circle cx="32" cy="29" r="15" fill="none" stroke="#fff0b4" stroke-width="1.5" />
+            <path d="M22 20 L26 17" stroke="#fff4ca" stroke-width="3" stroke-linecap="round" />
+            <circle cx="26" cy="27" r="2" fill="#503b22" /><circle cx="38" cy="27" r="2" fill="#503b22" />
+            <path d="M26 34 Q32 40 38 34" fill="none" stroke="#503b22" stroke-width="2" stroke-linecap="round" />
+          </g>
+        </svg>
         <span class="summary-icon" aria-hidden="true">₹</span>
         <div><span>Total Profit / Loss</span><strong [class.loss-text]="total() < 0" data-testid="report-total">{{ money(total()) }}</strong></div>
         </div>
@@ -35,11 +48,35 @@
           <span class="summary-icon" aria-hidden="true">↗</span>
           <div><span>Single-day highest profit</span><strong class="profit-text">{{ money(highestProfit()?.pnl ?? null) }}</strong>
             <small>{{ highestProfit() ? (highestProfit()!.date | date:'dd MMM yyyy') : 'No profit days' }}</small></div>
+          <svg class="coin-dancer metric-coin happy-coin" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <ellipse class="coin-shadow" cx="32" cy="58" rx="14" ry="3" fill="#65d5a2" opacity=".18" />
+            <g class="coin-body">
+              <path d="M24 44 L21 53 L16 53 M40 44 L43 53 L48 53 M15 29 L8 22 L8 16" fill="none" stroke="#d5ae60" stroke-width="3" stroke-linecap="round" />
+              <path class="coin-wave" d="M49 29 L56 22 L55 16" fill="none" stroke="#d5ae60" stroke-width="3" stroke-linecap="round" />
+              <circle cx="32" cy="29" r="19" fill="#edc66e" stroke="#af7d31" stroke-width="2" />
+              <circle cx="32" cy="29" r="15" fill="none" stroke="#fff0b4" stroke-width="1.5" />
+              <path d="M23 27 Q26 22 29 27 M35 27 Q38 22 41 27" fill="none" stroke="#503b22" stroke-width="2" stroke-linecap="round" />
+              <path d="M25 33 Q32 45 39 33 Z" fill="#503b22" />
+              <circle cx="22" cy="32" r="2" fill="#dc9670" /><circle cx="42" cy="32" r="2" fill="#dc9670" />
+            </g>
+          </svg>
         </div>
         <div class="summary-metric" data-testid="report-highest-loss">
           <span class="summary-icon loss-icon" aria-hidden="true">↘</span>
           <div><span>Single-day highest loss</span><strong class="loss-text">{{ money(highestLoss()?.pnl ?? null) }}</strong>
             <small>{{ highestLoss() ? (highestLoss()!.date | date:'dd MMM yyyy') : 'No loss days' }}</small></div>
+          <svg class="coin-dancer metric-coin sad-coin" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <ellipse cx="32" cy="58" rx="14" ry="3" fill="#e7ad89" opacity=".15" />
+            <g class="coin-body">
+              <path d="M24 44 L24 53 L19 53 M40 44 L40 53 L45 53 M15 29 L9 35 L11 41 M49 29 L55 35 L53 41" fill="none" stroke="#bd8b62" stroke-width="3" stroke-linecap="round" />
+              <circle cx="32" cy="29" r="19" fill="#d7ae7c" stroke="#9d704a" stroke-width="2" />
+              <circle cx="32" cy="29" r="15" fill="none" stroke="#f1d3aa" stroke-width="1.5" />
+              <path d="M23 24 L28 22 M36 22 L41 24" stroke="#614633" stroke-width="2" stroke-linecap="round" />
+              <circle cx="26" cy="28" r="2" fill="#614633" /><circle cx="38" cy="28" r="2" fill="#614633" />
+              <path d="M26 38 Q32 32 38 38" fill="none" stroke="#614633" stroke-width="2" stroke-linecap="round" />
+              <path class="coin-tear" d="M41 30 Q36 38 41 38 Q46 38 41 30" fill="#8ccbd7" />
+            </g>
+          </svg>
         </div>
       </div>
       <div class="range"><span>{{ start() | date:'dd MMM yyyy' }} - {{ rangeEnd() | date:'dd MMM yyyy' }}</span></div>

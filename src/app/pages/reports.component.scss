@@ -13,6 +13,24 @@ button:focus-visible, input:focus-visible, .months:focus-visible { outline: 2px 
 .summary-metric + .summary-metric { border-left: 1px solid #282928; }
 .summary-metric small { display: block; color: #a8b2ad; margin-top: 4px; }
 .summary-icon { flex-shrink: 0; }
+.coin-dancer { position: relative; order: 1; width: 48px; height: 48px; flex-shrink: 0; margin: 0 0 0 16px; overflow: visible; }
+@media (max-width: 767px) {
+  .coin-dancer { order: 1; left: 0; margin-left: auto; }
+}
+.coin-body { transform-origin: 32px 50px; animation: coin-dance 2.4s ease-in-out infinite; }
+.coin-wave { transform-origin: 49px 29px; animation: coin-wave .8s ease-in-out infinite alternate; }
+.coin-shadow { transform-origin: 32px 58px; animation: coin-shadow 2.4s ease-in-out infinite; }
+@keyframes coin-dance { 0%, 100% { transform: rotate(-9deg); } 25% { transform: translateY(-5px) rotate(5deg); } 50% { transform: rotate(9deg); } 75% { transform: translateY(-5px) rotate(-5deg); } }
+@keyframes coin-wave { from { transform: rotate(-12deg); } to { transform: rotate(22deg); } }
+@keyframes coin-shadow { 0%, 50%, 100% { transform: scaleX(1); opacity: .18; } 25%, 75% { transform: scaleX(.7); opacity: .1; } }
+.metric-coin { display: block; left: 0; }
+.happy-coin .coin-body { animation-duration: 1.8s; }
+.sad-coin .coin-body { animation: coin-sigh 3.2s ease-in-out infinite; }
+.coin-tear { animation: coin-tear 3.2s ease-in-out infinite; }
+@keyframes coin-sigh { 0%, 100% { transform: rotate(-4deg); } 50% { transform: translateY(3px) rotate(5deg); } }
+@keyframes coin-tear { 0%, 25% { opacity: 0; transform: translateY(-2px); } 45% { opacity: .9; } 80%, 100% { opacity: 0; transform: translateY(8px); } }
+.summary-metric > div { min-width: 0; }
+@media (prefers-reduced-motion: reduce) { .coin-body, .coin-wave, .coin-shadow, .happy-coin .coin-body, .sad-coin .coin-body, .coin-tear { animation: none; } }
 .report-summary .profit-text { color: #65d5a2; }
 .report-summary .loss-icon { background: #321c20; color: #ff737a; }
 @media (max-width: 600px) { .summary-metric { justify-content: flex-start; } .summary-metric + .summary-metric { border-left: 0; border-top: 1px solid #282928; padding-top: 16px; } }
