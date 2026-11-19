@@ -198,6 +198,9 @@ export class JournalComponent {
       if (!this.auth.demo && !this.auth.user()) void this.router.navigateByUrl('/login');
     });
   }
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+  }
   updateActiveSection() {
     if (this.isDetailPage) return;
     const threshold = (document.querySelector('.topbar')?.getBoundingClientRect().bottom ?? 0) + 24;

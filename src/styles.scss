@@ -162,6 +162,18 @@ p {
   color: #eff6e9;
 }
 .mobile-page-nav { display: none; }
+.mobile-scroll-top { display: none; }
+@media (max-width: 767px) {
+  .mobile-scroll-top {
+    display: grid; place-items: center; position: fixed; z-index: 60;
+    right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    width: 36px; height: 36px; border: 1px solid #68ae91; border-radius: 50%; opacity: .65;
+    background: #146b59; color: #fff2c9; box-shadow: 0 4px 14px #0004; cursor: pointer;
+  }
+  .mobile-scroll-top svg { width: 18px; height: 18px; }
+  .mobile-scroll-top:hover { background: #205745; opacity: 1; }
+  .mobile-scroll-top:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+}
 .metric-card.palette-charcoal h2 { color: #7952b3; }
 .metric-card.palette-teal h2 { color: #187849; }
 .metric-card.palette-olive h2 { color: #906309; }
