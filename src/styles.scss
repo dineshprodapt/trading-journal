@@ -265,11 +265,7 @@ app-trading-rules .rule-card .rule-green { color: #357000; }
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  animation: name-blink 2s ease-in-out infinite;
-}
-@keyframes name-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.55; }
+  color: #fff;
 }
 .signout-button {
   flex: 0 0 auto;
@@ -363,9 +359,6 @@ app-trading-rules .rule-card .rule-green { color: #357000; }
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .user-label {
-    animation: none;
-  }
   .quote-track {
     animation: none;
   }

@@ -1,6 +1,28 @@
 <section class="rules-hero" aria-labelledby="rules-title">
   <div class="rules-kicker">THE DISCIPLINE PLAYBOOK <span>18 PERSONAL RULES</span></div>
-  <h1 id="rules-title">My Trading Rules</h1>
+  <div class="rules-title-row">
+    <h1 id="rules-title">My Trading Rules</h1>
+    <svg class="discipline-checklist" viewBox="0 0 120 112" aria-hidden="true" focusable="false">
+      <g class="checklist-board">
+        <rect x="18" y="13" width="68" height="88" rx="9" fill="#d4ac68" />
+        <rect x="24" y="19" width="56" height="76" rx="5" fill="#f4edda" />
+        <rect x="37" y="8" width="30" height="15" rx="5" fill="#8aac95" stroke="#234c3d" stroke-width="2" />
+        <g fill="none" stroke="#a0b6a6" stroke-width="2">
+          <rect x="31" y="33" width="12" height="12" rx="3" /><rect x="31" y="53" width="12" height="12" rx="3" /><rect x="31" y="73" width="12" height="12" rx="3" />
+          <path d="M50 36 H70 M50 42 H63 M50 56 H70 M50 62 H63 M50 76 H70 M50 82 H63" stroke-linecap="round" />
+        </g>
+        <g fill="none" stroke="#247b59" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path class="rule-check check-one" pathLength="1" d="M33 38 L37 42 L44 32" />
+          <path class="rule-check check-two" pathLength="1" d="M33 58 L37 62 L44 52" />
+          <path class="rule-check check-three" pathLength="1" d="M33 78 L37 82 L44 72" />
+        </g>
+      </g>
+      <g class="discipline-shield">
+        <path d="M91 61 L108 67 V81 Q108 94 91 101 Q74 94 74 81 V67 Z" fill="#23664e" stroke="#a5d7b3" stroke-width="2" />
+        <path d="M83 80 L89 86 L100 73" fill="none" stroke="#f0ca80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+      </g>
+    </svg>
+  </div>
   <p>{{ config.subtitle }} [ <span class="rules-scope">{{ config.scope }}</span> ]</p>
   <div class="rules-mantra"><span aria-hidden="true">✦</span> <strong>{{ config.reminder }}</strong></div>
 </section>

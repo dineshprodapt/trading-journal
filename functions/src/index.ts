@@ -53,6 +53,7 @@ export const analyzeMonth = onCall({ region: 'asia-south1', invoker: 'public', s
     if (!response.ok) throw Error('Provider unavailable');
     const findings = validateFindings(JSON.parse(responseText(await response.json())), notes);
     const report: MonthlyReview = { month, sourceKey, model: model.value(), generatedAt: new Date().toISOString(), findings };
+    // One document per user/month: replace only after the new review is validated.
     await ref.set(report);
     return report;
   } catch {

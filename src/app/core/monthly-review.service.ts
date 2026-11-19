@@ -36,8 +36,8 @@ export class MonthlyReviewService {
     if (this.auth.demo || !this.auth.user() || !this.auth.db) return null;
     const uid = this.auth.user()!.uid;
     const key = this.cacheKey(uid, month);
-    const cached = this.cached(key);
-    if (cached !== undefined) return cached;
+    // Reopen the saved monthly document so another tab/device's replacement is visible.
+    // The local cache is only used to avoid repeating analysis of unchanged notes.
     const snapshot = await getDocFromServer(doc(this.auth.db, 'users', uid, 'monthlyReviews', month));
     const report = snapshot.exists() ? snapshot.data() as MonthlyReview : null;
     this.save(key, report);

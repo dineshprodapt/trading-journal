@@ -1,4 +1,18 @@
 :host { display: block; }
+.rules-title-row { display: flex; align-items: center; gap: clamp(18px, 4vw, 56px); margin-top: 14px; }
+.rules-title-row h1 { margin: 0; min-width: 0; }
+.discipline-checklist { width: clamp(70px, 9vw, 110px); height: auto; flex-shrink: 0; overflow: visible; }
+.checklist-board { animation: checklist-float 5s ease-in-out infinite; }
+.rule-check { stroke-dasharray: 1; stroke-dashoffset: 1; animation: checklist-tick 6s ease-in-out infinite; }
+.check-two { animation-name: checklist-tick-two; }
+.check-three { animation-name: checklist-tick-three; }
+.discipline-shield { transform-origin: 91px 81px; animation: checklist-shield 6s ease-in-out infinite; }
+@keyframes checklist-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes checklist-tick { 0%, 10%, 95%, 100% { stroke-dashoffset: 1; } 22%, 85% { stroke-dashoffset: 0; } }
+@keyframes checklist-tick-two { 0%, 28%, 95%, 100% { stroke-dashoffset: 1; } 40%, 85% { stroke-dashoffset: 0; } }
+@keyframes checklist-tick-three { 0%, 46%, 95%, 100% { stroke-dashoffset: 1; } 58%, 85% { stroke-dashoffset: 0; } }
+@keyframes checklist-shield { 0%, 58%, 80%, 100% { transform: scale(1); } 66% { transform: scale(1.1); } }
+@media (prefers-reduced-motion: reduce) { .checklist-board, .rule-check, .discipline-shield { animation: none; } .rule-check { stroke-dashoffset: 0; } }
 .rules-scope { color: #d4ad16; }
 .rules-hero { padding: clamp(24px, 4vw, 48px); border-radius: 20px; background: radial-gradient(ellipse at top right, #41634a, transparent 65%), #143c31; color: #fff; box-shadow: 0 12px 32px #143c3114; }
 .rules-kicker { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; font-size: .68rem; font-weight: 700; letter-spacing: 2px; color: #d3e6bf; }

@@ -1,4 +1,14 @@
 :host { display: block; }
+.hero-intro { display: grid; grid-template-columns: minmax(0, 1fr) clamp(64px, 9vw, 120px); align-items: center; gap: 12px; }
+.hero-copy { min-width: 0; }
+.construction-worker { display: block; width: 100%; overflow: visible; }
+.worker-body { transform-origin: 50px 140px; animation: worker-lean 1.8s ease-in-out infinite; }
+.worker-hammer { transform-origin: 63px 74px; animation: worker-hammer 1.8s ease-in-out infinite; }
+.work-sparks { animation: work-sparks 1.8s ease-out infinite; }
+@keyframes worker-hammer { 0%, 100% { transform: rotate(-18deg); } 45% { transform: rotate(-32deg); } 58%, 68% { transform: rotate(52deg); } }
+@keyframes worker-lean { 0%, 100% { transform: rotate(-2deg); } 58%, 68% { transform: rotate(3deg); } }
+@keyframes work-sparks { 0%, 54%, 85%, 100% { opacity: 0; } 60% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .worker-body, .worker-hammer, .work-sparks { animation: none; } .work-sparks { opacity: 0; } }
 .mistakes-hero { padding: clamp(24px, 4vw, 44px); border-radius: 20px; background: radial-gradient(ellipse at top right, #526b4c, transparent 70%), #143c31; color: #fff; }
 .eyebrow { color: #d3e6bf; letter-spacing: 2px; font-size: .7rem; }
 .mistakes-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); align-items: center; gap: clamp(24px, 4vw, 56px); }
