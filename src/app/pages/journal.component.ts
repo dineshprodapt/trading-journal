@@ -185,6 +185,19 @@ export class JournalComponent {
   chartCumulativeTotal = computed(() => this.chartCumulative().at(-1) ?? null);
   chartDates = computed(() => this.period().map((e) => e.date));
   chartCumulative = computed(() => this.period().map((e) => e.cumulative));
+  currentStreak = computed(() => {
+    const rows = this.period();
+    const last = rows.at(-1);
+    if (!last) return { kind: 'empty', label: 'No recorded days' };
+    if (last.pnl === 0) return { kind: 'flat', label: 'Flat day' };
+    const winning = last.pnl > 0;
+    let count = 0;
+    for (let index = rows.length - 1; index >= 0; index--) {
+      if (rows[index].pnl === 0 || (rows[index].pnl > 0) !== winning) break;
+      count++;
+    }
+    return { kind: winning ? 'win' : 'loss', label: `${count} ${winning ? 'winning' : 'losing'} ${count === 1 ? 'day' : 'days'}` };
+  });
   constructor() {
     afterNextRender(() => {
       const section = this.route.snapshot.fragment;

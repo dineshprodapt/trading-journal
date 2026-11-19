@@ -14,7 +14,7 @@
         [class.active]="!isDetailPage && activeSection() === 'overview'"
         [attr.aria-current]="!isDetailPage && activeSection() === 'overview' ? 'location' : null"
       >
-        ◫ <span>Overview</span>
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Overview</span>
       </button>
       <button
         type="button"
@@ -22,7 +22,7 @@
         [class.active]="!isDetailPage && activeSection() === 'daily'"
         [attr.aria-current]="!isDetailPage && activeSection() === 'daily' ? 'location' : null"
       >
-        ▤ <span>Daily journal</span>
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3" width="15" height="18" rx="2"/><path d="M9 3v18M3 7h4M3 12h4M3 17h4M12 8h5M12 12h5M12 16h3"/></svg><span>Daily journal</span>
       </button>
       <button
         type="button"
@@ -30,11 +30,11 @@
         [class.active]="!isDetailPage && activeSection() === 'monthly'"
         [attr.aria-current]="!isDetailPage && activeSection() === 'monthly' ? 'location' : null"
       >
-        ▥ <span>Monthly summary</span>
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M7 17v-2M12 17v-4M17 17v-3"/></svg><span>Monthly summary</span>
       </button>
-      <a routerLink="/journal/rules" [class.active]="isRulesPage" [attr.aria-current]="isRulesPage ? 'page' : null">✦ <span>My Trading Rules</span></a>
-      <a routerLink="/journal/mistakes" [class.active]="isMistakesPage" [attr.aria-current]="isMistakesPage ? 'page' : null"><span aria-hidden="true">&#9678;</span> <span>Mistakes</span></a>
-      <a routerLink="/journal/reports" [class.active]="isReportsPage" [attr.aria-current]="isReportsPage ? 'page' : null"><span aria-hidden="true">▦</span> <span>Reports</span></a>
+      <a routerLink="/journal/rules" [class.active]="isRulesPage" [attr.aria-current]="isRulesPage ? 'page' : null"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="4" width="15" height="17" rx="2"/><rect x="9" y="2" width="7" height="4" rx="1"/><path d="m8 11 1.5 1.5L12 10M14 11h3m-9 6 1.5 1.5L12 16M14 17h3"/></svg><span>My Trading Rules</span></a>
+      <a routerLink="/journal/mistakes" [class.active]="isMistakesPage" [attr.aria-current]="isMistakesPage ? 'page' : null"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m10.3 4-8 14a2 2 0 0 0 1.7 3h16a2 2 0 0 0 1.7-3l-8-14a2 2 0 0 0-3.4 0ZM12 9v4M12 17h.01"/></svg><span>Mistakes</span></a>
+      <a routerLink="/journal/reports" [class.active]="isReportsPage" [attr.aria-current]="isReportsPage ? 'page' : null"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10ZM14 3v7h7M7 17v-3M12 17v-5M17 17v-2"/></svg><span>Reports</span></a>
     </nav>
     <div class="sidebar-foot">
       <span class="status-dot"></span>{{ auth.demo ? 'Local demo' : 'Private journal' }}
@@ -249,7 +249,11 @@
                 <h2>The bigger picture</h2>
                 <p>All-time cumulative P&amp;L at each selected date</p><p data-testid="cumulative-chart-total" aria-live="polite">Latest plotted total: <strong>{{ journal.loading() ? 'Loading...' : chartCumulativeTotal() === null ? 'No data' : money(chartCumulativeTotal()) }}</strong></p>
               </div>
-              <span class="tag">RUNNING TOTAL</span>
+              <div class="streak-badge" [attr.data-kind]="currentStreak().kind" aria-live="polite"
+                title="Consecutive recorded days ending at the latest date in the selected period. Flat days break the streak; days without entries are skipped.">
+                <span class="streak-heading">CURRENT STREAK</span>
+                <strong>@if (currentStreak().kind === 'win') { <span aria-hidden="true">🔥 </span> }{{ currentStreak().label }}</strong>
+              </div>
             </div>
             <app-trend-chart
               title="Cumulative P&L"
