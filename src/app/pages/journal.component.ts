@@ -22,9 +22,10 @@ import {
 } from '../core/journal.model';
 import { ExportService } from '../core/export.service';
 import { TrendChartComponent } from '../shared/trend-chart.component';
+import { ReflectionAnimationComponent } from '../shared/reflection-animation.component';
 @Component({
   selector: 'app-journal',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, TrendChartComponent, RouterLink, MistakesComponent, ReportsComponent, TradingRulesComponent, ThemeToggleComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TrendChartComponent, ReflectionAnimationComponent, RouterLink, MistakesComponent, ReportsComponent, TradingRulesComponent, ThemeToggleComponent],
   templateUrl: './journal.component.html',
   host: {
     '(window:scroll)': 'updateActiveSection()',

@@ -6,9 +6,18 @@ export class ThemeService {
   private readonly document = inject(DOCUMENT);
   private readonly current = signal<'light' | 'dark'>('light');
   readonly theme = this.current.asReadonly();
+  private hasPreference = false;
 
   constructor() {
-    this.apply('light');
+    let theme: 'light' | 'dark' = this.document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light';
+    try {
+      const saved = this.document.defaultView?.localStorage.getItem('trading-journal-theme');
+      if (saved === 'light' || saved === 'dark') {
+        theme = saved;
+        this.hasPreference = true;
+      }
+    } catch {}
+    this.apply(theme);
   }
 
   toggle() {
@@ -17,7 +26,15 @@ export class ThemeService {
   }
 
   setTheme(theme: 'light' | 'dark') {
+    this.hasPreference = true;
     this.apply(theme);
+    try {
+      this.document.defaultView?.localStorage.setItem('trading-journal-theme', theme);
+    } catch {}
+  }
+
+  setDefaultTheme(theme: 'light' | 'dark') {
+    if (!this.hasPreference) this.setTheme(theme);
   }
 
   private apply(theme: 'light' | 'dark') {

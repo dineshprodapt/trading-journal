@@ -1,0 +1,30 @@
+<div class="sequence" [class.paused]="paused()" role="region" aria-label="Reflect, refine, repeat">
+  <span class="accessible">Reflect: Record every trade. Refine: Improve your process. Repeat: Consistency matters.</span>
+  <div class="stage" aria-hidden="true">
+    <div class="scene reflect">
+      <svg viewBox="0 0 220 110" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <g class="book"><path class="paper" d="M53 22Q80 15 110 25Q140 15 167 22V85Q140 78 110 88Q80 78 53 85Z"/><path d="M110 25V88"/><path class="ink" pathLength="1" d="M65 37H96M65 49H96M65 61H89"/><path class="check" pathLength="1" d="M126 53l9 9 18-22"/></g>
+        <g class="pen"><path class="gold" d="m81 63 32-36 6 6-32 36-9 3Z"/></g>
+      </svg>
+      <span class="step">01 / REFLECT</span><strong>Record every trade</strong>
+    </div>
+    <div class="scene refine">
+      <svg viewBox="0 0 220 110" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path class="route" pathLength="1" d="M42 78Q75 78 90 57T157 40"/>
+        <circle class="target" cx="166" cy="40" r="22"/><circle class="gold" cx="166" cy="40" r="12"/>
+        <circle class="dot first" cx="47" cy="77" r="5"/><circle class="dot second" cx="87" cy="60" r="5"/><circle class="dot third" cx="127" cy="43" r="5"/>
+        <path class="check" pathLength="1" d="m157 40 6 6 12-13"/>
+      </svg>
+      <span class="step">02 / REFINE</span><strong>Improve your process</strong>
+    </div>
+    <div class="scene repeat">
+      <svg viewBox="0 0 220 110" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect class="paper" x="67" y="22" width="77" height="65" rx="7"/><path d="M67 39H144M85 16V29M126 16V29"/>
+        <path class="tick one" pathLength="1" d="m80 51 4 4 7-9"/><path class="tick two" pathLength="1" d="m103 51 4 4 7-9"/><path class="tick three" pathLength="1" d="m80 71 4 4 7-9"/>
+        <g class="cycle gold"><path d="M155 53a18 18 0 1 1-9 31M143 83l3-9 7 6"/></g>
+      </svg>
+      <span class="step">03 / REPEAT</span><strong>Consistency matters</strong>
+    </div>
+  </div>
+  <button hidden type="button" (click)="paused.set(!paused())" [attr.aria-pressed]="paused()" [attr.aria-label]="paused() ? 'Resume header animation' : 'Pause header animation'">{{ paused() ? '▶' : 'Ⅱ' }}</button>
+</div>

@@ -71,7 +71,6 @@ export class AuthService {
   private async acceptUser(user: User | null): Promise<boolean> {
     this.user.set(null);
     if (!user) {
-      this.theme.setTheme('light');
       return false;
     }
     const token = await user.getIdTokenResult();
@@ -86,7 +85,7 @@ export class AuthService {
     }
     // Do not expose an account to the journal until access is validated.
     if (this.auth?.currentUser?.uid !== user.uid) return false;
-    this.theme.setTheme('dark');
+    this.theme.setDefaultTheme('dark');
     this.user.set(user);
     return true;
   }
@@ -104,7 +103,6 @@ export class AuthService {
   }
   async logout() {
     await signOut(await this.client());
-    this.theme.setTheme('light');
     this.user.set(null);
   }
 }

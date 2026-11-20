@@ -1,0 +1,32 @@
+:host { display: block; flex: 1 1 480px; min-width: 300px; max-width: 660px; color: var(--ink); }
+.sequence { position: relative; text-align: center; padding-bottom: 34px; }
+.stage { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.scene { display: flex; align-items: center; flex-direction: column; min-width: 0; }
+svg { width: 100%; max-width: 220px; height: 100px; color: #69ae91; }
+.paper { fill: rgba(105,174,145,.08); }
+.gold { stroke: #c5a56b; }
+.step { font-size: 9px; letter-spacing: 2px; color: var(--muted); margin: 4px 0 7px; }
+strong { font-size: 12px; font-weight: 500; line-height: 1.5; }
+button { position: absolute; right: 8px; bottom: 0; border: 1px solid var(--line); border-radius: 50%; width: 30px; height: 30px; background: transparent; color: var(--muted); font-size: 11px; }
+button:hover { color: var(--ink); }
+button:focus-visible { outline: 2px solid #69ae91; outline-offset: 3px; }
+.accessible { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.ink, .check, .tick, .route { stroke-dasharray: 1; animation: draw 4s ease-in-out infinite; }
+.check, .three { animation-delay: .7s; }
+.two { animation-delay: .35s; }
+.pen { animation: pen 4s ease-in-out infinite; }
+.book { transform-origin: center; animation: open-book 4s ease-in-out infinite; }
+.dot { fill: #69ae91; animation: settle 4s ease-in-out infinite; }
+.second { animation-delay: .15s; }
+.third { animation-delay: .3s; }
+.cycle { transform-origin: 157px 70px; animation: turn 4s ease-in-out infinite; }
+.paused *, .paused { animation-play-state: paused !important; }
+@keyframes draw { 0%, 12% { stroke-dashoffset: 1; } 55%, 90% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 1; } }
+@keyframes pen { 0%, 100% { transform: translate(0,-12px); opacity: 0; } 20%, 60% { opacity: 1; } 65% { transform: translate(-14px,13px); } 85% { opacity: 0; } }
+@keyframes open-book { 0%, 100% { transform: scaleX(.85); } 25%, 85% { transform: scaleX(1); } }
+@keyframes settle { 0%, 100% { transform: translate(-12px,-18px); opacity: .2; } 45%, 85% { transform: translate(0,0); opacity: 1; } }
+@keyframes turn { 0%, 35% { transform: rotate(-30deg); } 80%, 100% { transform: rotate(0); } }
+@media (max-width: 1199px) { :host { flex-basis: 320px; } .stage { gap: 6px; } .step { letter-spacing: 1px; } }
+@media (max-width: 767px) { :host { width: 100%; min-width: 0; max-width: none; flex: 0 0 auto; } .stage { gap: 8px; } svg { height: 85px; } }
+@media (prefers-reduced-motion: reduce) { .sequence * { animation: none !important; } button { display: none; } }
+

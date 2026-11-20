@@ -8,7 +8,6 @@ import { Component, input } from '@angular/core';
         <div class="journal-loading-art" aria-hidden="true">
           <div class="journal-loading-orbit"></div>
           <div class="journal-loading-bars"><i></i><i></i><i></i><i></i><i></i></div>
-          <span class="journal-loading-spark">✦</span>
         </div>
         <p class="journal-loading-eyebrow">YOUR TRADING JOURNAL</p>
         <h1>Bringing your days into focus</h1>

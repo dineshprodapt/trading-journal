@@ -2,6 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <script>
+      // Restore the theme before styles and Angular can paint a light frame.
+      (() => {
+        let theme = 'light';
+        try {
+          const saved = localStorage.getItem('trading-journal-theme');
+          if (saved === 'dark' || saved === 'light') theme = saved;
+        } catch {}
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
+    <style>
+      html { background: #f5f7f4; }
+      html[data-bs-theme='dark'] { background: #101b17; }
+    </style>
     <title>Trading Journal</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

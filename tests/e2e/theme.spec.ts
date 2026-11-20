@@ -50,3 +50,14 @@ test('theme toggle still works when saving preferences is unavailable', async ({
   await page.getByRole('button', { name: 'Switch to light theme' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-bs-theme', 'light');
 });
+
+for (const theme of ['light', 'dark']) {
+  test(`saved ${theme} theme applies before Angular starts`, async ({ page }) => {
+    await page.addInitScript(value => localStorage.setItem('trading-journal-theme', value), theme);
+    await page.route(/\.js(?:\?.*)?$/, route => route.abort());
+    await page.goto('/journal');
+    await expect(page.locator('html')).toHaveAttribute('data-bs-theme', theme);
+    await expect(page.locator('html')).toHaveCSS('color-scheme', theme);
+    await expect(page.locator('html')).toHaveCSS('background-color', theme === 'dark' ? 'rgb(16, 27, 23)' : 'rgb(245, 247, 244)');
+  });
+}
