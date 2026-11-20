@@ -179,6 +179,7 @@ export class JournalComponent {
   });
   chartMonths = computed(() => this.chartMonthlyRows().map(m => monthLabel(m.month)));
   chartMonthlyValues = computed(() => this.chartMonthlyRows().map(m => m.pnl));
+  chartMonthlyPercentages = computed(() => this.chartMonthlyRows().map(m => m.profitPercent));
   chartRangeLabel = computed(() => this.chartMonths()[0] + ' – ' + this.chartMonths().at(-1));
   chartMonthlyTotal = computed(() => this.chartMonthlyRows().some(row => row.days > 0)
     ? this.chartMonthlyValues().reduce((sum, value) => sum + value, 0) : null);

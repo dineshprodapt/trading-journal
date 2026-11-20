@@ -16,7 +16,7 @@ The Mistakes page sends a month identifier to an authenticated Firebase callable
 
    Enter the key only into the secret prompt, never into Angular source or chat. The deployment uses Node 22 and region `asia-south1`. `REVIEW_MODEL` defaults to `gpt-4.1`; change it via Firebase parameter configuration to a model supporting Responses and Structured Outputs, then redeploy. The client region must match the function region.
 3. Build and publish the updated frontend using the existing Firebase Hosting or GitHub Pages deployment workflow. GitHub Pages can call the Firebase function directly through the Firebase SDK.
-4. Sign in, open Mistakes, select a month and choose **Analyze month with AI**. Compare the findings and excerpts with your notes before relying on them.
+4. Sign in, open Mistakes, select a month and choose **Analyze month with AI**. Compare the findings and snippets with your notes before relying on them.
 
 No cloud deployment, billing activation or live model evaluation is implied by local tests.
 
@@ -27,7 +27,7 @@ No cloud deployment, billing activation or live model evaluation is implied by l
 - Reports are saved under `users/{uid}/monthlyReviews/{month}`. Each successful updated review replaces that month's document; no second report or history document is created. The previous report remains saved until its replacement succeeds. Opening Mistakes reads the latest saved document from Firebase, including replacements made on another device. Only their owner may read them; only the backend writes them. Rate-limit documents are server-only.
 - A SHA-256 fingerprint covers all nonblank notes, trading rules and review version. Changed/deleted notes or changed rules mark the report stale. Unchanged requests reuse the saved report. Model changes invalidate the backend cache.
 - Each account may start at most 10 noncached attempts per UTC day, including failed attempts. A processing lock across all months is released when the request finishes; it expires after three minutes if interrupted. Processing conflicts and daily limits have separate messages. Requests are bounded to 31 notes of 2,000 characters and 12,000 output tokens. Existing cached reports do not consume attempts.
-- Requests set `store: false`. This does not promise zero provider retention; review the provider's data policies for your account. Saved reports contain private note excerpts in your Firestore account.
+- Requests set `store: false`. This does not promise zero provider retention; review the provider's data policies for your account. Saved reports contain private note snippets in your Firestore account.
 - The old phrase detector remains in an explicitly labeled collapsed section; it is never presented as AI output. Demo mode cannot call paid analysis.
 - Rules are compiled from [trading-rules.config.ts](src/app/core/trading-rules.config.ts). Redeploy both backend and frontend when these rules or [access-policy.ts](src/app/core/access-policy.ts) change; keep Firestore rules in sync with account access.
 

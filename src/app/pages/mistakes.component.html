@@ -102,7 +102,7 @@
                 <h4>{{ finding.title }}</h4>
                 <p>{{ finding.explanation }}</p>
                 <p><strong>Next step:</strong> {{ finding.action }}</p>
-                <details><summary>View supporting excerpts · {{ finding.evidence.length }}</summary>
+                <details><summary>View supporting snippets · {{ finding.evidence.length }}</summary>
                   @for (item of finding.evidence; track item.date) {
                     <blockquote><time [attr.datetime]="item.date">{{ item.date }}</time><p>{{ item.quote }}</p></blockquote>
                   }

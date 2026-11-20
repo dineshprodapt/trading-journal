@@ -239,7 +239,9 @@
               [title]="'Monthly net P&L: ' + chartRangeLabel()"
               [labels]="chartMonths()"
               [values]="chartMonthlyValues()"
+              [percentages]="chartMonthlyPercentages()"
             />
+            <p class="small text-secondary d-none d-md-block">Monthly return = net P&amp;L ÷ first recorded capital that month × 100. Percentage is unavailable when capital is missing or zero.</p>
           </section>
         </div>
         <div class="col-lg-6">
@@ -257,6 +259,7 @@
             </div>
             <app-trend-chart
               title="Cumulative P&L"
+              class="cumulative-chart"
               [labels]="chartDates()"
               [values]="chartCumulative()"
             />
