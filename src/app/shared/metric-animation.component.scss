@@ -1,0 +1,33 @@
+:host { display: none; }
+svg { width: 100%; height: 100%; color: #278b70; }
+.trades { color: #7952b3; }
+.ratio { color: #906309; }
+.loss { color: #c65363; }
+.muted { opacity: .22; }
+rect { fill: currentColor; fill-opacity: .1; }
+.grow { transform-origin: 36px 58px; transform: scaleY(0); }
+.draw { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.slip { opacity: 0; transform: translateY(-6px); }
+.trophy { transform-origin: 36px 61px; }
+.cup { fill: currentColor; fill-opacity: .1; }
+.shine { opacity: 0; }
+.balance { transform-origin: 36px 23px; transform: rotate(var(--tilt)); }
+:host(.entered) {
+  .grow { animation: grow .9s ease-out both; }
+  .draw { animation: draw .9s .3s ease-out both; }
+  .slip { animation: stack .6s ease-out both; }
+  .middle { animation-delay: .15s; }
+  .front { animation-delay: .3s; }
+  .trophy { animation: trophy-rise 1.2s ease-out both; }
+  .shine { animation: shine 1.6s .3s ease-out both; }
+  .balance { animation: balance-settle 1.8s ease-in-out both; }
+}
+:host-context(html[data-bs-theme='dark']) { svg { color: #80d2b1; } .trades { color: #c9a7f5; } .ratio { color: #f0ca80; } .loss { color: #ee9ba3; } }
+@keyframes grow { to { transform: scaleY(1); } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes stack { to { opacity: 1; transform: translateY(0); } }
+@keyframes trophy-rise { 0% { opacity: 0; transform: translateY(8px) scale(.85); } 65% { opacity: 1; transform: translateY(-2px) scale(1.04); } 100% { transform: none; } }
+@keyframes shine { 0%, 100% { opacity: 0; } 45%, 70% { opacity: .8; } }
+@keyframes balance-settle { 0% { transform: rotate(0); } 35% { transform: rotate(12deg); } 65% { transform: rotate(-12deg); } 100% { transform: rotate(var(--tilt)); } }
+@media (max-width: 575px) { :host { display: block; width: 64px; height: 64px; grid-column: 2; grid-row: 1 / 4; align-self: center; } }
+@media (prefers-reduced-motion: reduce) { :host .grow, :host .draw, :host .slip, :host .trophy, :host .shine, :host .balance { animation: none; transform: none; opacity: 1; } .draw { stroke-dashoffset: 0; } .balance { transform: rotate(var(--tilt)); } .shine { opacity: 0; } }

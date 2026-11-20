@@ -174,6 +174,7 @@
             <p>NET PROFIT / LOSS</p>
             <h2 [class.negative]="metrics().pnl < 0">{{ money(metrics().pnl) }}</h2>
             <small>After trading charges</small>
+            <app-metric-animation kind="pnl" [pnl]="metrics().pnl" />
           </section>
         </div>
         <div class="col-12 col-sm-6 col-xl-3">
@@ -185,6 +186,7 @@
                 ? metrics().missingCounts + ' days missing trade counts'
                 : 'From your recorded trade counts'
             }}</small>
+            <app-metric-animation kind="trades" />
           </section>
         </div>
         <div class="col-12 col-sm-6 col-xl-3">
@@ -197,6 +199,7 @@
               >{{ metrics().wins }} profit · {{ metrics().losses }} loss ·
               {{ metrics().flat }} flat</small
             >
+            <app-metric-animation kind="rate" [rate]="metrics().winRate" />
           </section>
         </div>
         <div class="col-12 col-sm-6 col-xl-3">
@@ -204,6 +207,7 @@
             <p>WIN / LOSS DAY RATIO</p>
             <h2 class="ratio-value">{{ metrics().ratio }}</h2>
             <small>Flat days excluded</small>
+            <app-metric-animation kind="ratio" [wins]="metrics().wins" [losses]="metrics().losses" />
           </section>
         </div>
       </div>

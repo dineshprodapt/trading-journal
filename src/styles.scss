@@ -186,11 +186,11 @@ html[data-bs-theme='dark'] .streak-badge[data-kind='loss'] strong { color: #ee9b
   .mobile-scroll-top:hover { background: #205745; opacity: 1; }
   .mobile-scroll-top:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
 }
-.metric-card.palette-charcoal h2 { color: #7952b3; }
-.metric-card.palette-teal h2 { color: #187849; }
+.metric-card.palette-charcoal h2 { color: #a64732; }
+.metric-card.palette-teal h2 { color: #176d9a; }
 .metric-card.palette-olive h2 { color: #906309; }
-html[data-bs-theme='dark'] .metric-card.palette-charcoal h2 { color: #c9a7f5; }
-html[data-bs-theme='dark'] .metric-card.palette-teal h2 { color: #74dfac; }
+html[data-bs-theme='dark'] .metric-card.palette-charcoal h2 { color: #f2a58d; }
+html[data-bs-theme='dark'] .metric-card.palette-teal h2 { color: #85c9f4; }
 html[data-bs-theme='dark'] .metric-card.palette-olive h2 { color: #f0ca80; }
 /* Configured rule markup is sanitized by Angular; these styles also apply to innerHTML. */
 app-trading-rules .rule-red, app-trading-rules .rule-red strong { color: #c52419; }
@@ -470,7 +470,7 @@ app-trading-rules .rule-card .rule-green { color: #357000; }
   border-color: #cadac3;
 }
 .metric-card.featured h2 {
-  color: #146b59;
+  color: #187849;
 }
 .metric-card .ratio-value {
   font-size: 1.4rem;
@@ -847,4 +847,16 @@ footer span {
   .metric-card h2 {
     font-size: 1.6rem;
   }
+}
+
+@media (max-width: 575px) {
+  .metric-card:has(app-metric-animation) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 64px;
+    column-gap: 12px;
+  }
+  .metric-card:has(app-metric-animation) > p,
+  .metric-card:has(app-metric-animation) > h2,
+  .metric-card:has(app-metric-animation) > small { grid-column: 1; }
+  .metric-card:has(app-metric-animation) > h2 { overflow-wrap: anywhere; }
 }

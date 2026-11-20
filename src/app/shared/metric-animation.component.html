@@ -1,0 +1,37 @@
+<svg viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false" [class.loss]="kind() === 'pnl' && pnl() < 0" [class.trades]="kind() === 'trades'" [class.ratio]="kind() === 'ratio'">
+  @switch (kind()) {
+    @case ('pnl') {
+      <path class="muted" d="M9 60H63"/>
+      <g class="grow"><rect x="14" y="43" width="9" height="13" rx="2"/><rect x="31" y="33" width="9" height="23" rx="2"/><rect x="48" y="23" width="9" height="33" rx="2"/></g>
+      @if (pnl() > 0) { <path class="draw" pathLength="1" d="m12 31 16-12 10 3 20-13m-10 0h10v10"/> }
+      @else if (pnl() < 0) { <path class="draw" pathLength="1" d="m12 10 16 9 10-3 20 14m-10 0h10V20"/> }
+      @else { <path class="draw" pathLength="1" d="M14 15H57"/> }
+    }
+    @case ('trades') {
+      <rect class="slip back muted" x="13" y="12" width="36" height="43" rx="5"/>
+      <rect class="slip middle muted" x="19" y="17" width="36" height="43" rx="5"/>
+      <rect class="slip front" x="25" y="22" width="36" height="43" rx="5"/>
+      <path class="draw" pathLength="1" d="M33 32H52m-19 8h12m-11 11 5 5 12-12"/>
+    }
+    @case ('rate') {
+      <g class="trophy">
+        <path class="cup" d="M23 16H49V31C49 42 43 47 36 47S23 42 23 31Z"/>
+        <path d="M23 21H15V27C15 35 19 38 25 38M49 21H57V27C57 35 53 38 47 38M36 47V57M26 61H46M30 57H42"/>
+        @if (rate() === null || rate() === 0) { <path d="M31 30H41"/> }
+        @else { <path class="draw" pathLength="1" d="m29 30 5 5 10-12"/> }
+      </g>
+      <path class="shine" d="M12 12l3 3M36 5V9M60 12l-3 3"/>
+    }
+    @case ('ratio') {
+      <path d="M36 18V59M23 62H49M29 58H43"/>
+      <g class="balance" [style.--tilt]="balanceTilt() + 'deg'">
+        <path d="M12 23H60"/>
+        <path d="m17 23-9 20h18ZM8 43q9 12 18 0"/>
+        <path class="loss" d="m55 23-9 20h18ZM46 43q9 12 18 0"/>
+        <path class="draw" pathLength="1" d="m13 35 3 3 5-6"/>
+        <path class="loss" d="m52 33 6 6m0-6-6 6"/>
+      </g>
+      <circle cx="36" cy="20" r="3"/>
+    }
+  }
+</svg>

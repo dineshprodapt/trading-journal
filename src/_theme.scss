@@ -43,7 +43,8 @@ html[data-bs-theme='dark'] {
   .metric-card.palette-charcoal { background: rgb(48, 50, 48); border-color: rgb(78, 82, 78); }
   .metric-card.palette-teal { background: rgb(24, 48, 48); border-color: rgb(47, 80, 80); }
   .metric-card.palette-olive { background: rgb(43, 46, 34); border-color: rgb(75, 81, 57); }
-  .metric-card.featured h2, .positive, .chart-key { color: #80d2b1 !important; }
+  .positive, .chart-key { color: #80d2b1 !important; }
+  .metric-card.featured h2:not(.negative) { color: #74dfac; }
   .negative { color: #ff969e !important; }
   .eyebrow, .header-eyebrow, footer { color: #b1c69e; }
   .quote-strip { border-color: var(--line); }
