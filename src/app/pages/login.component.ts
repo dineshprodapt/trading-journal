@@ -32,9 +32,9 @@ import { JournalService } from '../core/journal.service';
         <div class="alert alert-warning" role="alert">{{ message() }}</div>
       }
       <div class="google-entry" [class.is-busy]="busy()">
-        <span class="sparkle sparkle-one" aria-hidden="true">✦</span>
-        <span class="sparkle sparkle-two" aria-hidden="true">✧</span>
-        <span class="sparkle sparkle-three" aria-hidden="true">✦</span>
+        <span class="sparkle sparkle-one" aria-hidden="true"></span>
+        <span class="sparkle sparkle-two" aria-hidden="true"></span>
+        <span class="sparkle sparkle-three" aria-hidden="true"></span>
         <button
           type="button"
           class="google-button"
