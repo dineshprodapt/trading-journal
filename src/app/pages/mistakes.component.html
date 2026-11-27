@@ -7,6 +7,7 @@
   <span class="eyebrow">REFLECT · REFINE · IMPROVE</span>
   <h1 id="mistakes-title">Mistakes</h1>
   <p>Spot the patterns. Break the cycle.</p>
+  <p class="discipline-reminder">A loss-making day with perfect discipline is better for evaluating your strategy than a profitable day with multiple rule violations.</p>
   <label for="mistakes-month">Review month</label>
   <select id="mistakes-month" class="form-select" [ngModel]="month()" (ngModelChange)="month.set($event)">
     @for (value of months(); track value) { <option [value]="value">{{ monthLabel(value) }}</option> }

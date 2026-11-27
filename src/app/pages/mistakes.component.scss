@@ -25,6 +25,7 @@
 @media (max-width: 850px) { .mistakes-hero { grid-template-columns: minmax(0, 1fr); } }
 h1 { margin: 18px 0 8px; font-size: clamp(2rem, 4vw, 3.4rem); }
 .mistakes-hero p { color: #dce8dd; }
+.mistakes-hero .discipline-reminder { color: #f4d493; line-height: 1.65; font-size: .95rem; }
 label { display: block; margin: 24px 0 8px; font-size: .8rem; }
 select { max-width: 260px; }
 .review-heading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin: 30px 0 12px; }
